@@ -16,8 +16,12 @@ class TransportSparqlClient:
     
     def __init__(self, fuseki_url: str = "http://localhost:3030/transport/query"):
         self.fuseki_url = fuseki_url
+        self.update_url = fuseki_url.replace('/query', '/update')
         self.headers = {
             'Accept': 'application/sparql-results+json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        self.update_headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     
@@ -169,6 +173,100 @@ WHERE {{
 }}
 """
         return self.execute_query(query)
+    
+    # ===== MÉTHODES DE MISE À JOUR (INSERT/DELETE) =====
+    
+    def execute_update(self, update_query: str) -> bool:
+        """Exécute une requête SPARQL UPDATE (INSERT/DELETE)"""
+        try:
+            # Ajouter les prefixes si nécessaire
+            if "PREFIX" not in update_query:
+                update_query = self._add_prefixes() + "\n" + update_query
+            
+            params = {'update': update_query}
+            response = requests.post(self.update_url, data=params, headers=self.update_headers, timeout=5)
+            response.raise_for_status()
+            return True
+        except requests.exceptions.ConnectionError as e:
+            logger.error(f"Fuseki indisponible pour UPDATE: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"Erreur requête SPARQL UPDATE: {e}")
+            return False
+    
+    def create_vehicule(self, nom: str, type_vehicule: str, matricule: str = "", capacite: int = None, vitesse_moyenne: float = None) -> bool:
+        """Crée un nouveau véhicule dans l'ontologie"""
+        # Générer un URI unique
+        uri_safe_nom = nom.replace(" ", "_").replace("'", "")
+        vehicule_uri = f"{self.TRANSPORT_PREFIX}Vehicule_{uri_safe_nom}"
+        
+        # Construire la requête INSERT
+        insert_query = f"""
+INSERT DATA {{
+    <{vehicule_uri}> rdf:type transport:Véhicule ;
+                     rdf:type transport:{type_vehicule} ;
+                     transport:nom "{nom}" .
+"""
+        
+        if matricule:
+            insert_query += f'    <{vehicule_uri}> transport:matricule "{matricule}" .\n'
+        
+        if capacite is not None:
+            insert_query += f'    <{vehicule_uri}> transport:capacite "{capacite}"^^xsd:integer .\n'
+        
+        if vitesse_moyenne is not None:
+            insert_query += f'    <{vehicule_uri}> transport:vitesseMoyenne "{vitesse_moyenne}"^^xsd:float .\n'
+        
+        insert_query += "}"
+        
+        return self.execute_update(insert_query)
+    
+    def delete_vehicule(self, vehicule_uri: str) -> bool:
+        """Supprime un véhicule de l'ontologie"""
+        delete_query = f"""
+DELETE WHERE {{
+    <{vehicule_uri}> ?p ?o .
+}}
+"""
+        return self.execute_update(delete_query)
+    
+    def update_vehicule(self, vehicule_uri: str, nom: str = None, matricule: str = None, capacite: int = None, vitesse_moyenne: float = None) -> bool:
+        """Met à jour un véhicule existant"""
+        if not any([nom is not None, matricule is not None, capacite is not None, vitesse_moyenne is not None]):
+            return True
+        
+        # Construire la requête DELETE/INSERT
+        update_query = f"""
+DELETE {{
+    <{vehicule_uri}> transport:nom ?oldNom ;
+                     transport:matricule ?oldMatricule ;
+                     transport:capacite ?oldCapacite ;
+                     transport:vitesseMoyenne ?oldVitesse .
+}}
+INSERT {{
+"""
+        
+        if nom is not None:
+            update_query += f'    <{vehicule_uri}> transport:nom "{nom}" .\n'
+        if matricule is not None:
+            update_query += f'    <{vehicule_uri}> transport:matricule "{matricule}" .\n'
+        if capacite is not None:
+            update_query += f'    <{vehicule_uri}> transport:capacite "{capacite}"^^xsd:integer .\n'
+        if vitesse_moyenne is not None:
+            update_query += f'    <{vehicule_uri}> transport:vitesseMoyenne "{vitesse_moyenne}"^^xsd:float .\n'
+        
+        update_query += f"""
+}}
+WHERE {{
+    <{vehicule_uri}> rdf:type ?type .
+    OPTIONAL {{ <{vehicule_uri}> transport:nom ?oldNom }}
+    OPTIONAL {{ <{vehicule_uri}> transport:matricule ?oldMatricule }}
+    OPTIONAL {{ <{vehicule_uri}> transport:capacite ?oldCapacite }}
+    OPTIONAL {{ <{vehicule_uri}> transport:vitesseMoyenne ?oldVitesse }}
+}}
+"""
+        
+        return self.execute_update(update_query)
 
 
 # Instance globale du client

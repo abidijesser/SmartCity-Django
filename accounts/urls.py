@@ -16,5 +16,11 @@ urlpatterns = [
     path('test/villes/', views.test_villes_view, name='test_villes'),
     path('test/vehicules/', views.test_vehicules_view, name='test_vehicules'),
     path('test/stations/', views.test_stations_view, name='test_stations'),
+    
+    # Gestion CRUD des véhicules
+    path('vehicules/', views.vehicules_list_view, name='vehicules_list'),
+    path('vehicules/create/', views.vehicule_create_view, name='vehicule_create'),
+    path('vehicules/<path:vehicule_uri>/edit/', views.vehicule_detail_view, name='vehicule_edit'),
+    path('vehicules/<path:vehicule_uri>/delete/', views.vehicule_delete_view, name='vehicule_delete'),
 ]
 

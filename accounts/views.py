@@ -3,7 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import UserProfile
-from .forms import SignUpForm, LoginForm
+from .forms import SignUpForm, LoginForm, VehiculeForm
 from .sparql_utils import sparql, FUSEKI_AVAILABLE
 
 # Create your views here.
@@ -269,5 +269,168 @@ def test_stations_view(request):
 def test_home_view(request):
     """Page d'accueil pour les tests RDF"""
     return render(request, 'accounts/test_home.html', {
+        'fuseki_available': FUSEKI_AVAILABLE
+    })
+
+
+# ============================================
+# GESTION CRUD DES VÉHICULES
+# ============================================
+
+@login_required
+def vehicules_list_view(request):
+    """Liste tous les véhicules"""
+    context = {
+        'fuseki_available': FUSEKI_AVAILABLE,
+        'vehicules': []
+    }
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            vehicules = sparql.get_vehicles()
+            for v in vehicules:
+                context['vehicules'].append({
+                    'uri': v.get('vehicule', {}),
+                    'nom': v.get('nom', {}),
+                    'matricule': v.get('matricule', {}),
+                    'capacite': v.get('capacite', {}),
+                    'vitesse_moyenne': v.get('vitesseMoyenne', {}),
+                    'type': v.get('type', {}).split('#')[-1] if v.get('type', {}) else 'N/A'
+                })
+        except Exception as e:
+            context['error'] = str(e)
+    
+    return render(request, 'accounts/vehicules_list.html', context)
+
+
+@login_required
+def vehicule_create_view(request):
+    """Crée un nouveau véhicule"""
+    if request.method == 'POST':
+        form = VehiculeForm(request.POST)
+        if form.is_valid():
+            # Créer le véhicule via SPARQL
+            success = sparql.create_vehicule(
+                nom=form.cleaned_data['nom'],
+                type_vehicule=form.cleaned_data['type_vehicule'],
+                matricule=form.cleaned_data.get('matricule', ''),
+                capacite=form.cleaned_data.get('capacite'),
+                vitesse_moyenne=form.cleaned_data.get('vitesse_moyenne')
+            )
+            
+            if success:
+                messages.success(request, 'Véhicule créé avec succès!')
+                return redirect('accounts:vehicules_list')
+            else:
+                messages.error(request, 'Erreur lors de la création du véhicule. Vérifiez que Fuseki est disponible.')
+    else:
+        form = VehiculeForm()
+    
+    return render(request, 'accounts/vehicule_form.html', {
+        'form': form,
+        'title': 'Créer un véhicule',
+        'submit_label': 'Créer le véhicule',
+        'fuseki_available': FUSEKI_AVAILABLE
+    })
+
+
+@login_required
+def vehicule_detail_view(request, vehicule_uri):
+    """Détails d'un véhicule"""
+    from urllib.parse import unquote
+    vehicule_uri = unquote(vehicule_uri)
+    
+    # Récupérer les véhicules et trouver celui-ci
+    vehicules = sparql.get_vehicles()
+    vehicule_data = None
+    
+    for v in vehicules:
+        if v.get('vehicule', {}) == vehicule_uri:
+            vehicule_data = {
+                'uri': v.get('vehicule', {}),
+                'nom': v.get('nom', {}),
+                'matricule': v.get('matricule', {}),
+                'capacite': v.get('capacite', {}),
+                'vitesse_moyenne': v.get('vitesseMoyenne', {}),
+                'type': v.get('type', {}).split('#')[-1] if v.get('type', {}) else 'N/A'
+            }
+            break
+    
+    if not vehicule_data:
+        messages.error(request, 'Véhicule non trouvé.')
+        return redirect('accounts:vehicules_list')
+    
+    if request.method == 'POST':
+        form = VehiculeForm(request.POST)
+        if form.is_valid():
+            # Mettre à jour le véhicule via SPARQL
+            success = sparql.update_vehicule(
+                vehicule_uri=vehicule_uri,
+                nom=form.cleaned_data.get('nom'),
+                matricule=form.cleaned_data.get('matricule', ''),
+                capacite=form.cleaned_data.get('capacite'),
+                vitesse_moyenne=form.cleaned_data.get('vitesse_moyenne')
+            )
+            
+            if success:
+                messages.success(request, 'Véhicule mis à jour avec succès!')
+                return redirect('accounts:vehicules_list')
+            else:
+                messages.error(request, 'Erreur lors de la mise à jour du véhicule.')
+    else:
+        # Pré-remplir le formulaire avec les données existantes
+        form = VehiculeForm(initial={
+            'nom': vehicule_data['nom'],
+            'type_vehicule': vehicule_data['type'],
+            'matricule': vehicule_data['matricule'],
+            'capacite': vehicule_data['capacite'],
+            'vitesse_moyenne': vehicule_data['vitesse_moyenne']
+        })
+    
+    return render(request, 'accounts/vehicule_form.html', {
+        'form': form,
+        'vehicule': vehicule_data,
+        'title': f"Modifier {vehicule_data['nom']}",
+        'submit_label': 'Mettre à jour',
+        'fuseki_available': FUSEKI_AVAILABLE
+    })
+
+
+@login_required
+def vehicule_delete_view(request, vehicule_uri):
+    """Supprime un véhicule"""
+    from urllib.parse import unquote
+    vehicule_uri = unquote(vehicule_uri)
+    
+    if request.method == 'POST':
+        success = sparql.delete_vehicule(vehicule_uri)
+        if success:
+            messages.success(request, 'Véhicule supprimé avec succès!')
+        else:
+            messages.error(request, 'Erreur lors de la suppression du véhicule.')
+        return redirect('accounts:vehicules_list')
+    
+    # Récupérer les infos du véhicule pour confirmation
+    vehicules = sparql.get_vehicles()
+    vehicule_data = None
+    
+    for v in vehicules:
+        if v.get('vehicule', {}) == vehicule_uri:
+            vehicule_data = {
+                'uri': v.get('vehicule', {}),
+                'nom': v.get('nom', {}),
+                'matricule': v.get('matricule', {}),
+                'capacite': v.get('capacite', {}),
+                'vitesse_moyenne': v.get('vitesseMoyenne', {}),
+                'type': v.get('type', {}).split('#')[-1] if v.get('type', {}) else 'N/A'
+            }
+            break
+    
+    if not vehicule_data:
+        messages.error(request, 'Véhicule non trouvé.')
+        return redirect('accounts:vehicules_list')
+    
+    return render(request, 'accounts/vehicule_confirm_delete.html', {
+        'vehicule': vehicule_data,
         'fuseki_available': FUSEKI_AVAILABLE
     })

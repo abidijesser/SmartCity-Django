@@ -1,0 +1,65 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}Supprimer le véhicule - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-4xl space-y-6 p-6">
+    <!-- Header -->
+    <div class="rounded-2xl border border-red-200 bg-red-50 p-8">
+        <h1 class="mb-2 text-3xl font-bold text-red-900">
+            <i class="fas fa-exclamation-triangle mr-3"></i>Supprimer un véhicule
+        </h1>
+        <p class="text-red-700">Cette action est irréversible</p>
+    </div>
+
+    <!-- Alert -->
+    {% if fuseki_available %}
+    <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
+        <i class="fas fa-info-circle mr-2"></i> La suppression sera appliquée immédiatement dans Fuseki.
+    </div>
+    {% else %}
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <i class="fas fa-times-circle mr-2"></i> Fuseki n'est pas disponible. La suppression ne sera pas effective.
+    </div>
+    {% endif %}
+
+    <!-- Vehicule Info -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <h2 class="mb-6 text-xl font-semibold text-gray-900">Informations du véhicule à supprimer</h2>
+        
+        <div class="space-y-4">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                    <p class="text-sm text-gray-500">Nom</p>
+                    <p class="text-base font-medium text-gray-900">{{ vehicule.nom }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Type</p>
+                    <p class="text-base font-medium text-gray-900">{{ vehicule.type }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Matricule</p>
+                    <p class="text-base font-medium text-gray-900">{{ vehicule.matricule }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Capacité</p>
+                    <p class="text-base font-medium text-gray-900">{{ vehicule.capacite }} passagers</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 flex items-center justify-end space-x-4 border-t border-gray-200 pt-6">
+            <a href="{% url 'accounts:vehicules_list' %}" class="rounded-lg border border-gray-300 bg-white px-5 py-3 text-base font-medium text-gray-700 transition hover:bg-gray-50">
+                <i class="fas fa-times mr-2"></i> Annuler
+            </a>
+            <form method="post" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-red-600 px-5 py-3 text-base font-medium text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                    <i class="fas fa-trash mr-2"></i> Supprimer définitivement
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
