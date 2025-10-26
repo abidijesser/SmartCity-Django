@@ -1,0 +1,94 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Dashboard Conducteur{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2><i class="fas fa-car"></i> Dashboard Conducteur</h2>
+    <p class="text-light">Bienvenue, <strong>{{ user.username }}</strong> !</p>
+    
+    {% if not fuseki_available %}
+    <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle"></i> Apache Fuseki n'est pas disponible. Veuillez démarrer le serveur Fuseki pour voir les données RDF.
+    </div>
+    {% elif sparql_error %}
+    <div class="alert alert-danger">
+        <i class="fas fa-times-circle"></i> Erreur SPARQL: {{ sparql_error }}
+    </div>
+    {% endif %}
+    
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h1 class="display-4"><i class="fas fa-route text-primary"></i></h1>
+                    <h5>Mes Trajets</h5>
+                    <p class="text-muted">Gérer mes trajets</p>
+                    <button class="btn btn-primary" disabled>À venir</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h1 class="display-4"><i class="fas fa-car-side text-success"></i></h1>
+                    <h5>Mon Véhicule</h5>
+                    <p class="text-muted">Informations du véhicule</p>
+                    <button class="btn btn-primary" disabled>À venir</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h1 class="display-4"><i class="fas fa-clock text-info"></i></h1>
+                    <h5>Horaires</h5>
+                    <p class="text-muted">Consulter les horaires</p>
+                    <button class="btn btn-primary" disabled>À venir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if fuseki_available and not sparql_error %}
+    <!-- Liste des véhicules -->
+    {% if vehicles %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5><i class="fas fa-bus"></i> Véhicules Disponibles ({{ vehicles|length }})</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for vehicle in vehicles %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6><i class="fas fa-car"></i> {{ vehicle.nom|default:"Véhicule" }}</h6>
+                            <p class="mb-1"><strong>Matricule:</strong> {{ vehicle.matricule|default:"-" }}</p>
+                            <p class="mb-1"><strong>Capacité:</strong> {{ vehicle.capacite|default:"-" }} passagers</p>
+                            <p class="mb-0"><strong>Vitesse moyenne:</strong> {{ vehicle.vitesseMoyenne|default:"-" }} km/h</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5><i class="fas fa-info-circle"></i> Informations du profil</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Rôle :</strong> {{ profile.role }}</p>
+            <p><strong>Téléphone :</strong> {{ profile.telephone|default:"Non renseigné" }}</p>
+            {% if profile.linked_uri %}
+            <p><strong>URI RDF :</strong> <a href="{{ profile.linked_uri }}" target="_blank">{{ profile.linked_uri }}</a></p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
