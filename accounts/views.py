@@ -117,3 +117,157 @@ def profile_view(request):
         'user': user,
         'profile': profile
     })
+
+
+# ============================================
+# VUES DE TEST POUR L'INTÉGRATION RDF/FUSEKI
+# ============================================
+
+@login_required
+def test_villes_view(request):
+    """Vue de test pour afficher toutes les villes de l'ontologie"""
+    context = {
+        'fuseki_available': FUSEKI_AVAILABLE,
+        'villes': []
+    }
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            # Requête SPARQL pour récupérer toutes les villes
+            query = """
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX transport: <http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6/>
+            
+            SELECT ?ville ?nom ?latitude ?longitude
+            WHERE {
+                ?ville rdf:type transport:Ville .
+                ?ville transport:nom ?nom .
+                OPTIONAL { ?ville transport:latitude ?latitude . }
+                OPTIONAL { ?ville transport:longitude ?longitude . }
+            }
+            ORDER BY ?nom
+            """
+            
+            results = sparql.execute_query(query)
+            for result in results:
+                ville = {
+                    'uri': result.get('ville', {}).get('value', ''),
+                    'nom': result.get('nom', {}).get('value', 'N/A'),
+                    'latitude': result.get('latitude', {}).get('value', 'N/A'),
+                    'longitude': result.get('longitude', {}).get('value', 'N/A'),
+                }
+                context['villes'].append(ville)
+                
+        except Exception as e:
+            context['error'] = str(e)
+    
+    return render(request, 'accounts/test_villes.html', context)
+
+
+@login_required
+def test_vehicules_view(request):
+    """Vue de test pour afficher tous les véhicules de l'ontologie"""
+    context = {
+        'fuseki_available': FUSEKI_AVAILABLE,
+        'vehicules': []
+    }
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            # Requête SPARQL pour récupérer tous les véhicules
+            query = """
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX transport: <http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6/>
+            
+            SELECT ?vehicule ?nom ?type ?matricule ?capacite
+            WHERE {
+                ?vehicule rdf:type transport:Véhicule .
+                ?vehicule transport:nom ?nom .
+                ?vehicule rdf:type ?type .
+                FILTER (?type != transport:Véhicule)
+                OPTIONAL { ?vehicule transport:matricule ?matricule . }
+                OPTIONAL { ?vehicule transport:capacite ?capacite . }
+            }
+            ORDER BY ?nom
+            """
+            
+            results = sparql.execute_query(query)
+            for result in results:
+                # Extraire le type de véhicule (Bus, Taxi, etc.)
+                type_uri = result.get('type', {}).get('value', '')
+                type_name = type_uri.split('#')[-1] if '#' in type_uri else 'N/A'
+                
+                vehicule = {
+                    'uri': result.get('vehicule', {}).get('value', ''),
+                    'nom': result.get('nom', {}).get('value', 'N/A'),
+                    'type': type_name,
+                    'matricule': result.get('matricule', {}).get('value', 'N/A'),
+                    'capacite': result.get('capacite', {}).get('value', 'N/A'),
+                }
+                context['vehicules'].append(vehicule)
+                
+        except Exception as e:
+            context['error'] = str(e)
+    
+    return render(request, 'accounts/test_vehicules.html', context)
+
+
+@login_required
+def test_stations_view(request):
+    """Vue de test pour afficher toutes les stations de l'ontologie"""
+    context = {
+        'fuseki_available': FUSEKI_AVAILABLE,
+        'stations': []
+    }
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            # Requête SPARQL pour récupérer toutes les stations
+            query = """
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX transport: <http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6/>
+            
+            SELECT ?station ?nom ?adresse ?latitude ?longitude ?type ?ville
+            WHERE {
+                ?station rdf:type transport:Station .
+                ?station transport:nom ?nom .
+                ?station rdf:type ?type .
+                FILTER (?type != transport:Station)
+                OPTIONAL { ?station transport:adresse ?adresse . }
+                OPTIONAL { ?station transport:latitude ?latitude . }
+                OPTIONAL { ?station transport:longitude ?longitude . }
+                OPTIONAL { ?station transport:situeDans ?villeUri .
+                           ?villeUri transport:nom ?ville .
+                         }
+            }
+            ORDER BY ?nom
+            """
+            
+            results = sparql.execute_query(query)
+            for result in results:
+                type_uri = result.get('type', {}).get('value', '')
+                type_name = type_uri.split('#')[-1] if '#' in type_uri else 'N/A'
+                
+                station = {
+                    'uri': result.get('station', {}).get('value', ''),
+                    'nom': result.get('nom', {}).get('value', 'N/A'),
+                    'adresse': result.get('adresse', {}).get('value', 'N/A'),
+                    'latitude': result.get('latitude', {}).get('value', 'N/A'),
+                    'longitude': result.get('longitude', {}).get('value', 'N/A'),
+                    'type': type_name,
+                    'ville': result.get('ville', {}).get('value', 'N/A'),
+                }
+                context['stations'].append(station)
+                
+        except Exception as e:
+            context['error'] = str(e)
+    
+    return render(request, 'accounts/test_stations.html', context)
+
+
+@login_required
+def test_home_view(request):
+    """Page d'accueil pour les tests RDF"""
+    return render(request, 'accounts/test_home.html', {
+        'fuseki_available': FUSEKI_AVAILABLE
+    })

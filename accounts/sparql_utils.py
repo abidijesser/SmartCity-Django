@@ -4,6 +4,9 @@ Utilitaires SPARQL pour l'application Django
 from typing import List, Dict, Optional
 import requests
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TransportSparqlClient:
     """Client SPARQL pour l'ontologie de transport"""
@@ -26,13 +29,19 @@ class TransportSparqlClient:
                 sparql_query = self._add_prefixes() + "\n" + sparql_query
             
             params = {'query': sparql_query}
-            response = requests.post(self.fuseki_url, data=params, headers=self.headers)
+            response = requests.post(self.fuseki_url, data=params, headers=self.headers, timeout=5)
             response.raise_for_status()
             
             results = json.loads(response.text)
             return self._parse_results(results)
+        except requests.exceptions.ConnectionError as e:
+            logger.warning(f"Fuseki indisponible: {e}")
+            return []
+        except requests.exceptions.Timeout as e:
+            logger.warning(f"Timeout SPARQL: {e}")
+            return []
         except Exception as e:
-            print(f"Erreur requête SPARQL: {e}")
+            logger.error(f"Erreur requête SPARQL: {e}")
             return []
     
     def _add_prefixes(self) -> str:
@@ -162,10 +171,17 @@ WHERE {{
         return self.execute_query(query)
 
 
-# Instance globale du client (peut être désactivée si Fuseki n'est pas lancé)
-try:
-    sparql = TransportSparqlClient()
-    FUSEKI_AVAILABLE = True
-except:
-    FUSEKI_AVAILABLE = False
+# Instance globale du client
+sparql = TransportSparqlClient()
+
+# Fonction pour vérifier la disponibilité de Fuseki
+def check_fuseki_availability():
+    """Vérifie si Fuseki est disponible"""
+    try:
+        response = requests.get("http://localhost:3030", timeout=2)
+        return response.status_code == 200
+    except:
+        return False
+
+FUSEKI_AVAILABLE = check_fuseki_availability()
 
