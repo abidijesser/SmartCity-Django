@@ -1,63 +1,152 @@
-{% extends "accounts/base.html" %}
+{% extends "accounts/base_modern.html" %}
 
 {% block title %}Inscription - Transport Intelligent{% endblock %}
 
+{% block header_content %}
+<!-- Pas de header sur signup -->
+{% endblock %}
+
+{% block messages %}{% endblock %}
+
+{% block footer %}
+<!-- Pas de footer sur signup -->
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body p-5">
-                <h2 class="text-center mb-4">
-                    <i class="fas fa-user-plus"></i> Inscription
-                </h2>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        {{ form.username }}
+<div class="flex min-h-screen items-center justify-center bg-gray-100">
+    <div class="w-full max-w-2xl">
+        <!-- Logo et Titre -->
+        <div class="mb-8 text-center">
+            <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-500">
+                <i class="fas fa-bus text-3xl text-white"></i>
+            </div>
+
+            
+        </div>
+
+        <!-- Formulaire -->
+        <div class="rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                    <!-- Username -->
+                    <div class="md:col-span-2">
+                        <label class="mb-2 block text-sm font-semibold text-gray-900">Nom d'utilisateur</label>
+                        <div class="relative">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <input type="text" 
+                                   name="username" 
+                                   class="w-full rounded-lg border border-gray-300 bg-white py-3 pl-10 pr-4 text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500 focus:outline-none" 
+                                   placeholder="Nom d'utilisateur">
+                        </div>
                         {% if form.username.errors %}
-                            <div class="text-danger">{{ form.username.errors }}</div>
+                            <p class="mt-1 text-sm text-red-600">{{ form.username.errors }}</p>
                         {% endif %}
                     </div>
-                    <div class="mb-3">
-                        {{ form.email }}
+
+                    <!-- Email -->
+                    <div class="md:col-span-2">
+                        <label class="mb-2 block text-sm font-semibold text-gray-900">Email</label>
+                        <div class="relative">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <input type="email" 
+                                   name="email" 
+                                   class="w-full rounded-lg border border-gray-300 bg-white py-3 pl-10 pr-4 text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500 focus:outline-none" 
+                                   placeholder="votre@email.com">
+                        </div>
                         {% if form.email.errors %}
-                            <div class="text-danger">{{ form.email.errors }}</div>
+                            <p class="mt-1 text-sm text-red-600">{{ form.email.errors }}</p>
                         {% endif %}
                     </div>
-                    <div class="mb-3">
-                        {{ form.telephone }}
+
+                    <!-- Téléphone -->
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold text-gray-900">Téléphone <span class="text-gray-500 font-normal">(optionnel)</span></label>
+                        <div class="relative">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <input type="text" 
+                                   name="telephone" 
+                                   class="w-full rounded-lg border border-gray-300 bg-white py-3 pl-10 pr-4 text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500 focus:outline-none" 
+                                   placeholder="+33 6 12 34 56 78">
+                        </div>
                         {% if form.telephone.errors %}
-                            <div class="text-danger">{{ form.telephone.errors }}</div>
+                            <p class="mt-1 text-sm text-red-600">{{ form.telephone.errors }}</p>
                         {% endif %}
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Rôle</label>
-                        {{ form.role }}
+
+                    <!-- Rôle -->
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold text-gray-900">Rôle</label>
+                        <div class="relative">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <i class="fas fa-user-tag"></i>
+                            </div>
+                            <select name="role" class="w-full rounded-lg border border-gray-300 bg-white py-3 pl-10 pr-10 text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                                <option value="Conducteur">Conducteur</option>
+                                <option value="Passager">Passager</option>
+                                <option value="GestionnaireTransport">Gestionnaire</option>
+                            </select>
+                        </div>
                         {% if form.role.errors %}
-                            <div class="text-danger">{{ form.role.errors }}</div>
+                            <p class="mt-1 text-sm text-red-600">{{ form.role.errors }}</p>
                         {% endif %}
                     </div>
-                    <div class="mb-3">
-                        {{ form.password1 }}
+
+                    <!-- Mot de passe -->
+                    <div class="md:col-span-2">
+                        <label class="mb-2 block text-sm font-semibold text-gray-900">Mot de passe</label>
+                        <div class="relative">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <input type="password" 
+                                   name="password1" 
+                                   class="w-full rounded-lg border border-gray-300 bg-white py-3 pl-10 pr-4 text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500 focus:outline-none" 
+                                   placeholder="Mot de passe">
+                        </div>
                         {% if form.password1.errors %}
-                            <div class="text-danger">{{ form.password1.errors }}</div>
+                            <p class="mt-1 text-sm text-red-600">{{ form.password1.errors }}</p>
                         {% endif %}
                     </div>
-                    <div class="mb-3">
-                        {{ form.password2 }}
+
+                    <!-- Confirmation mot de passe -->
+                    <div class="md:col-span-2">
+                        <label class="mb-2 block text-sm font-semibold text-gray-900">Confirmer le mot de passe</label>
+                        <div class="relative">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <input type="password" 
+                                   name="password2" 
+                                   class="w-full rounded-lg border border-gray-300 bg-white py-3 pl-10 pr-4 text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500 focus:outline-none" 
+                                   placeholder="Confirmer le mot de passe">
+                        </div>
                         {% if form.password2.errors %}
-                            <div class="text-danger">{{ form.password2.errors }}</div>
+                            <p class="mt-1 text-sm text-red-600">{{ form.password2.errors }}</p>
                         {% endif %}
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-user-plus"></i> S'inscrire
+                </div>
+
+                <div class="mt-6">
+                    <button type="submit" class="w-full rounded-lg bg-brand-600 px-4 py-3 font-semibold text-white transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                        <i class="fas fa-user-plus mr-2"></i>S'inscrire
                     </button>
-                </form>
-                <hr>
-                <p class="text-center mt-3">
+                </div>
+            </form>
+
+            <!-- Lien connexion -->
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
                     Déjà un compte ? 
-                    <a href="{% url 'accounts:login' %}" class="text-decoration-none">
-                        <strong>Connectez-vous</strong>
+                    <a href="{% url 'accounts:login' %}" class="font-semibold text-brand-600 hover:text-brand-700">
+                        Connectez-vous
                     </a>
                 </p>
             </div>
@@ -65,4 +154,3 @@
     </div>
 </div>
 {% endblock %}
-

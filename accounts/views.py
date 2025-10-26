@@ -90,15 +90,8 @@ def dashboard_view(request):
         except Exception as e:
             context['sparql_error'] = str(e)
     
-    # Redirection selon le rôle
-    if profile.is_conducteur():
-        return render(request, 'accounts/dashboard_conducteur.html', context)
-    elif profile.is_passager():
-        return render(request, 'accounts/dashboard_passager.html', context)
-    elif profile.is_gestionnaire():
-        return render(request, 'accounts/dashboard_gestionnaire.html', context)
-    else:
-        return render(request, 'accounts/dashboard.html', context)
+    # Redirection selon le rôle - TOUS utilisent le nouveau template moderne
+    return render(request, 'accounts/dashboard_moderne.html', context)
 
 
 def profile_view(request):
