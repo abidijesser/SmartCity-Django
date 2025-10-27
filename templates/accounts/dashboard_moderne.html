@@ -41,6 +41,59 @@
         </div>
     </div>
 
+    <!-- Profil Info -->
+    <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-6 py-5border-gray-800">
+            <h3 class="text-lg font-semibold text-gray-900 text-gray-900">
+                <i class="fas fa-info-circle mr-2 text-brand-600"></i>Informations du Profil
+            </h3>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div class="flex items-center space-x-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100bg-gray-800">
+                        <i class="fas fa-user text-gray-600 text-gray-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 text-gray-600">Rôle</p>
+                        <p class="font-semibold text-gray-900 text-gray-900">{{ profile.get_role_display }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100bg-gray-800">
+                        <i class="fas fa-envelope text-gray-600 text-gray-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 text-gray-600">Email</p>
+                        <p class="font-semibold text-gray-900 text-gray-900">{{ user.email|default:"Non renseigné" }}</p>
+                    </div>
+                </div>
+                {% if profile.telephone %}
+                <div class="flex items-center space-x-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100bg-gray-800">
+                        <i class="fas fa-phone text-gray-600 text-gray-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 text-gray-600">Téléphone</p>
+                        <p class="font-semibold text-gray-900 text-gray-900">{{ profile.telephone }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                {% if profile.linked_uri %}
+                <div class="flex items-center space-x-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100bg-gray-800">
+                        <i class="fas fa-link text-gray-600 text-gray-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 text-gray-600">URI RDF</p>
+                        <a href="{{ profile.linked_uri }}" target="_blank" class="font-semibold text-brand-600 hover:text-brand-700 text-brand-600hover:text-brand-300">Voir l'ontologie →</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
     <!-- Alertes Fuseki -->
     {% if not fuseki_available %}
     <div class="rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800border-orange-900bg-orange-900text-orange-400">
@@ -65,13 +118,13 @@
         </div>
 
         <!-- Mon Véhicule -->
-        <div class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-green-300 hover:shadow-lg">
+        <a href="{% url 'accounts:vehicules_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-green-300 hover:shadow-lg block">
             <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-green-100">
                 <i class="fas fa-car-side text-green-600 text-2xl text-green-600"></i>
             </div>
             <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Mon Véhicule</h3>
             <p class="text-sm text-gray-600 text-gray-600">Informations et gestion du véhicule</p>
-        </div>
+        </a>
 
         <!-- Horaires -->
         <div class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-blue-300 hover:shadow-lg">
@@ -188,58 +241,7 @@
 
     {% endif %}
 
-    <!-- Profil Info -->
-    <div class="rounded-2xl border border-gray-200 bg-white">
-        <div class="border-b border-gray-200 px-6 py-5border-gray-800">
-            <h3 class="text-lg font-semibold text-gray-900 text-gray-900">
-                <i class="fas fa-info-circle mr-2 text-brand-600"></i>Informations du Profil
-            </h3>
-        </div>
-        <div class="p-6">
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div class="flex items-center space-x-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100bg-gray-800">
-                        <i class="fas fa-user text-gray-600 text-gray-600"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 text-gray-600">Rôle</p>
-                        <p class="font-semibold text-gray-900 text-gray-900">{{ profile.get_role_display }}</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100bg-gray-800">
-                        <i class="fas fa-envelope text-gray-600 text-gray-600"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 text-gray-600">Email</p>
-                        <p class="font-semibold text-gray-900 text-gray-900">{{ user.email|default:"Non renseigné" }}</p>
-                    </div>
-                </div>
-                {% if profile.telephone %}
-                <div class="flex items-center space-x-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100bg-gray-800">
-                        <i class="fas fa-phone text-gray-600 text-gray-600"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 text-gray-600">Téléphone</p>
-                        <p class="font-semibold text-gray-900 text-gray-900">{{ profile.telephone }}</p>
-                    </div>
-                </div>
-                {% endif %}
-                {% if profile.linked_uri %}
-                <div class="flex items-center space-x-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100bg-gray-800">
-                        <i class="fas fa-link text-gray-600 text-gray-600"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 text-gray-600">URI RDF</p>
-                        <a href="{{ profile.linked_uri }}" target="_blank" class="font-semibold text-brand-600 hover:text-brand-700 text-brand-600hover:text-brand-300">Voir l'ontologie →</a>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+    
 </div>
 {% endblock %}
 
