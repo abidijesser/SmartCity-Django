@@ -267,6 +267,299 @@ WHERE {{
 """
         
         return self.execute_update(update_query)
+    
+    def addTrajet(self, depart_station_uri: str, arrivee_station_uri: str, 
+                  vehicule_uri: str = None, heure_depart: str = None, 
+                  heure_arrivee: str = None, distance: float = None, 
+                  duree: float = None, nom_trajet: str = None) -> bool:
+        """
+        Crée un nouveau trajet dans l'ontologie
+        
+        Args:
+            depart_station_uri: URI de la station de départ (requis)
+            arrivee_station_uri: URI de la station d'arrivée (requis)
+            vehicule_uri: URI du véhicule utilisé (optionnel)
+            heure_depart: Heure de départ au format ISO 8601 (optionnel)
+            heure_arrivee: Heure d'arrivée au format ISO 8601 (optionnel)
+            distance: Distance du trajet en km (optionnel)
+            duree: Durée du trajet en heures (optionnel)
+            nom_trajet: Nom du trajet pour générer l'URI (optionnel)
+            
+        Returns:
+            bool: True si succès, False sinon
+        """
+        # Générer un URI unique pour le trajet
+        if nom_trajet:
+            uri_safe_nom = nom_trajet.replace(" ", "_").replace("'", "").replace("-", "_")
+        else:
+            # Générer un nom basé sur les stations
+            import time
+            uri_safe_nom = f"Trajet_{int(time.time())}"
+        
+        trajet_uri = f"{self.TRANSPORT_PREFIX}{uri_safe_nom}"
+        
+        # Construire la requête INSERT
+        insert_query = f"""
+INSERT DATA {{
+    <{trajet_uri}> rdf:type transport:Trajet ;
+                   transport:aPourDepart <{depart_station_uri}> ;
+                   transport:aPourArrivee <{arrivee_station_uri}> .
+"""
+        
+        # Ajouter les propriétés optionnelles
+        if vehicule_uri:
+            insert_query += f'    <{trajet_uri}> transport:utiliseVehicule <{vehicule_uri}> .\n'
+        
+        if heure_depart:
+            insert_query += f'    <{trajet_uri}> transport:heureDepart "{heure_depart}"^^xsd:dateTime .\n'
+        
+        if heure_arrivee:
+            insert_query += f'    <{trajet_uri}> transport:heureArrivee "{heure_arrivee}"^^xsd:dateTime .\n'
+        
+        if distance is not None:
+            insert_query += f'    <{trajet_uri}> transport:distanceTrajet "{distance}"^^xsd:float .\n'
+        
+        if duree is not None:
+            insert_query += f'    <{trajet_uri}> transport:dureeTrajet "{duree}"^^xsd:float .\n'
+        
+        insert_query += "}"
+        
+        return self.execute_update(insert_query)
+    
+    def get_all_trajets(self) -> List[Dict]:
+        """Récupère tous les trajets avec leurs détails"""
+        query = """
+SELECT ?trajet ?heureDepart ?heureArrivee ?dureeTrajet ?distanceTrajet 
+       ?departStation ?departNom ?arriveeStation ?arriveeNom 
+       ?vehicule ?vehiculeNom
+WHERE {
+    ?trajet rdf:type transport:Trajet .
+    
+    # Station de départ
+    OPTIONAL { 
+        ?trajet transport:aPourDepart ?departStation .
+        ?departStation transport:nom ?departNom
+    }
+    
+    # Station d'arrivée
+    OPTIONAL { 
+        ?trajet transport:aPourArrivee ?arriveeStation .
+        ?arriveeStation transport:nom ?arriveeNom
+    }
+    
+    # Véhicule
+    OPTIONAL {
+        ?trajet transport:utiliseVehicule ?vehicule .
+        ?vehicule transport:nom ?vehiculeNom
+    }
+    
+    # Propriétés du trajet
+    OPTIONAL { ?trajet transport:heureDepart ?heureDepart }
+    OPTIONAL { ?trajet transport:heureArrivee ?heureArrivee }
+    OPTIONAL { ?trajet transport:dureeTrajet ?dureeTrajet }
+    OPTIONAL { ?trajet transport:distanceTrajet ?distanceTrajet }
+}
+ORDER BY ?heureDepart
+"""
+        return self.execute_query(query)
+    
+    def delete_trajet(self, trajet_uri: str) -> bool:
+        """Supprime un trajet de l'ontologie"""
+        delete_query = f"""
+DELETE WHERE {{
+    <{trajet_uri}> ?p ?o .
+}}
+"""
+        return self.execute_update(delete_query)
+    
+    def update_trajet(self, trajet_uri: str, depart_station_uri: str = None, 
+                     arrivee_station_uri: str = None, vehicule_uri: str = None,
+                     heure_depart: str = None, heure_arrivee: str = None,
+                     distance: float = None, duree: float = None) -> bool:
+        """
+        Met à jour un trajet existant
+        
+        Args:
+            trajet_uri: URI du trajet à mettre à jour
+            depart_station_uri: Nouvelle URI de la station de départ (optionnel)
+            arrivee_station_uri: Nouvelle URI de la station d'arrivée (optionnel)
+            vehicule_uri: Nouvelle URI du véhicule (optionnel)
+            heure_depart: Nouvelle heure de départ (optionnel)
+            heure_arrivee: Nouvelle heure d'arrivée (optionnel)
+            distance: Nouvelle distance (optionnel)
+            duree: Nouvelle durée (optionnel)
+            
+        Returns:
+            bool: True si succès, False sinon
+        """
+        if not any([depart_station_uri, arrivee_station_uri, vehicule_uri, 
+                   heure_depart, heure_arrivee, distance is not None, duree is not None]):
+            return True
+        
+        # Construire la requête DELETE/INSERT
+        update_query = f"""
+DELETE {{
+    <{trajet_uri}> transport:aPourDepart ?oldDepart ;
+                   transport:aPourArrivee ?oldArrivee ;
+                   transport:utiliseVehicule ?oldVehicule ;
+                   transport:heureDepart ?oldHeureDepart ;
+                   transport:heureArrivee ?oldHeureArrivee ;
+                   transport:distanceTrajet ?oldDistance ;
+                   transport:dureeTrajet ?oldDuree .
+}}
+INSERT {{
+"""
+        
+        if depart_station_uri:
+            update_query += f'    <{trajet_uri}> transport:aPourDepart <{depart_station_uri}> .\n'
+        if arrivee_station_uri:
+            update_query += f'    <{trajet_uri}> transport:aPourArrivee <{arrivee_station_uri}> .\n'
+        if vehicule_uri:
+            update_query += f'    <{trajet_uri}> transport:utiliseVehicule <{vehicule_uri}> .\n'
+        if heure_depart:
+            update_query += f'    <{trajet_uri}> transport:heureDepart "{heure_depart}"^^xsd:dateTime .\n'
+        if heure_arrivee:
+            update_query += f'    <{trajet_uri}> transport:heureArrivee "{heure_arrivee}"^^xsd:dateTime .\n'
+        if distance is not None:
+            update_query += f'    <{trajet_uri}> transport:distanceTrajet "{distance}"^^xsd:float .\n'
+        if duree is not None:
+            update_query += f'    <{trajet_uri}> transport:dureeTrajet "{duree}"^^xsd:float .\n'
+        
+        update_query += f"""
+}}
+WHERE {{
+    <{trajet_uri}> rdf:type transport:Trajet .
+    OPTIONAL {{ <{trajet_uri}> transport:aPourDepart ?oldDepart }}
+    OPTIONAL {{ <{trajet_uri}> transport:aPourArrivee ?oldArrivee }}
+    OPTIONAL {{ <{trajet_uri}> transport:utiliseVehicule ?oldVehicule }}
+    OPTIONAL {{ <{trajet_uri}> transport:heureDepart ?oldHeureDepart }}
+    OPTIONAL {{ <{trajet_uri}> transport:heureArrivee ?oldHeureArrivee }}
+    OPTIONAL {{ <{trajet_uri}> transport:distanceTrajet ?oldDistance }}
+    OPTIONAL {{ <{trajet_uri}> transport:dureeTrajet ?oldDuree }}
+}}
+"""
+        
+        return self.execute_update(update_query)
+    
+    # ===== MÉTHODES POUR GÉRER LES STATIONS =====
+    
+    def addStation(self, nom: str, type_station: str, adresse: str = None,
+                   latitude: float = None, longitude: float = None,
+                   ville_uri: str = None) -> bool:
+        """
+        Crée une nouvelle station dans l'ontologie
+        
+        Args:
+            nom: Nom de la station (requis)
+            type_station: Type (StationBus, StationMetro, StationTramway) (requis)
+            adresse: Adresse de la station (optionnel)
+            latitude: Latitude GPS (optionnel)
+            longitude: Longitude GPS (optionnel)
+            ville_uri: URI de la ville où se situe la station (optionnel)
+            
+        Returns:
+            bool: True si succès, False sinon
+        """
+        # Générer un URI unique pour la station
+        uri_safe_nom = nom.replace(" ", "_").replace("'", "").replace("-", "_")
+        station_uri = f"{self.TRANSPORT_PREFIX}Station_{uri_safe_nom}"
+        
+        # Construire la requête INSERT
+        insert_query = f"""
+INSERT DATA {{
+    <{station_uri}> rdf:type transport:Station ;
+                    rdf:type transport:{type_station} ;
+                    transport:nom "{nom}" .
+"""
+        
+        # Ajouter les propriétés optionnelles
+        if adresse:
+            insert_query += f'    <{station_uri}> transport:adresse "{adresse}" .\n'
+        
+        if latitude is not None:
+            insert_query += f'    <{station_uri}> transport:latitude "{latitude}"^^xsd:float .\n'
+        
+        if longitude is not None:
+            insert_query += f'    <{station_uri}> transport:longitude "{longitude}"^^xsd:float .\n'
+        
+        if ville_uri:
+            insert_query += f'    <{station_uri}> transport:situeDans <{ville_uri}> .\n'
+        
+        insert_query += "}"
+        
+        return self.execute_update(insert_query)
+    
+    def delete_station(self, station_uri: str) -> bool:
+        """Supprime une station de l'ontologie"""
+        delete_query = f"""
+DELETE WHERE {{
+    <{station_uri}> ?p ?o .
+}}
+"""
+        return self.execute_update(delete_query)
+    
+    def update_station(self, station_uri: str, nom: str = None, adresse: str = None,
+                      latitude: float = None, longitude: float = None) -> bool:
+        """
+        Met à jour une station existante
+        
+        Args:
+            station_uri: URI de la station à mettre à jour
+            nom: Nouveau nom (optionnel)
+            adresse: Nouvelle adresse (optionnel)
+            latitude: Nouvelle latitude (optionnel)
+            longitude: Nouvelle longitude (optionnel)
+            
+        Returns:
+            bool: True si succès, False sinon
+        """
+        if not any([nom, adresse, latitude is not None, longitude is not None]):
+            return True
+        
+        # Construire la requête DELETE/INSERT
+        update_query = f"""
+DELETE {{
+    <{station_uri}> transport:nom ?oldNom ;
+                    transport:adresse ?oldAdresse ;
+                    transport:latitude ?oldLat ;
+                    transport:longitude ?oldLong .
+}}
+INSERT {{
+"""
+        
+        if nom:
+            update_query += f'    <{station_uri}> transport:nom "{nom}" .\n'
+        if adresse:
+            update_query += f'    <{station_uri}> transport:adresse "{adresse}" .\n'
+        if latitude is not None:
+            update_query += f'    <{station_uri}> transport:latitude "{latitude}"^^xsd:float .\n'
+        if longitude is not None:
+            update_query += f'    <{station_uri}> transport:longitude "{longitude}"^^xsd:float .\n'
+        
+        update_query += f"""
+}}
+WHERE {{
+    <{station_uri}> rdf:type ?type .
+    OPTIONAL {{ <{station_uri}> transport:nom ?oldNom }}
+    OPTIONAL {{ <{station_uri}> transport:adresse ?oldAdresse }}
+    OPTIONAL {{ <{station_uri}> transport:latitude ?oldLat }}
+    OPTIONAL {{ <{station_uri}> transport:longitude ?oldLong }}
+}}
+"""
+        
+        return self.execute_update(update_query)
+    
+    def get_all_villes(self) -> List[Dict]:
+        """Récupère toutes les villes pour les dropdowns"""
+        query = """
+SELECT ?ville ?nom
+WHERE {
+    ?ville rdf:type transport:Ville .
+    OPTIONAL { ?ville transport:nom ?nom }
+}
+ORDER BY ?nom
+"""
+        return self.execute_query(query)
 
 
 # Instance globale du client

@@ -434,3 +434,294 @@ def vehicule_delete_view(request, vehicule_uri):
         'vehicule': vehicule_data,
         'fuseki_available': FUSEKI_AVAILABLE
     })
+
+
+# ============================================
+# GESTION CRUD DES TRAJETS (Conducteurs uniquement)
+# ============================================
+
+@login_required
+def trajets_list_view(request):
+    """Liste tous les trajets (réservé aux conducteurs)"""
+    # Vérifier que l'utilisateur est conducteur
+    if not request.user.profile.is_conducteur():
+        messages.error(request, 'Seuls les conducteurs peuvent gérer les trajets.')
+        return redirect('accounts:dashboard')
+    
+    context = {
+        'fuseki_available': FUSEKI_AVAILABLE,
+        'trajets': []
+    }
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            trajets = sparql.get_all_trajets()
+            for t in trajets:
+                context['trajets'].append({
+                    'uri': t.get('trajet', ''),
+                    'depart_nom': t.get('departNom', 'N/A'),
+                    'arrivee_nom': t.get('arriveeNom', 'N/A'),
+                    'vehicule_nom': t.get('vehiculeNom', 'N/A'),
+                    'heure_depart': t.get('heureDepart', 'N/A'),
+                    'heure_arrivee': t.get('heureArrivee', 'N/A'),
+                    'distance': t.get('distanceTrajet', 'N/A'),
+                    'duree': t.get('dureeTrajet', 'N/A')
+                })
+        except Exception as e:
+            context['error'] = str(e)
+    
+    return render(request, 'accounts/trajets_list.html', context)
+
+
+@login_required
+def trajet_create_view(request):
+    """Crée un nouveau trajet (réservé aux conducteurs)"""
+    # Vérifier que l'utilisateur est conducteur
+    if not request.user.profile.is_conducteur():
+        messages.error(request, 'Seuls les conducteurs peuvent créer des trajets.')
+        return redirect('accounts:dashboard')
+    
+    if request.method == 'POST':
+        # Récupérer les données du formulaire
+        depart_station_uri = request.POST.get('depart_station')
+        arrivee_station_uri = request.POST.get('arrivee_station')
+        vehicule_uri = request.POST.get('vehicule') or None
+        heure_depart = request.POST.get('heure_depart') or None
+        heure_arrivee = request.POST.get('heure_arrivee') or None
+        distance = request.POST.get('distance')
+        duree = request.POST.get('duree')
+        nom_trajet = request.POST.get('nom_trajet') or None
+        
+        # Convertir les valeurs numériques
+        try:
+            distance = float(distance) if distance else None
+            duree = float(duree) if duree else None
+        except ValueError:
+            messages.error(request, 'Distance et durée doivent être des nombres.')
+            return redirect('accounts:trajet_create')
+        
+        # Créer le trajet
+        success = sparql.addTrajet(
+            depart_station_uri=depart_station_uri,
+            arrivee_station_uri=arrivee_station_uri,
+            vehicule_uri=vehicule_uri,
+            heure_depart=heure_depart,
+            heure_arrivee=heure_arrivee,
+            distance=distance,
+            duree=duree,
+            nom_trajet=nom_trajet
+        )
+        
+        if success:
+            messages.success(request, 'Trajet créé avec succès!')
+            return redirect('accounts:trajets_list')
+        else:
+            messages.error(request, 'Erreur lors de la création du trajet.')
+    
+    # Récupérer les stations et véhicules pour le formulaire
+    stations = []
+    vehicules = []
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            stations = sparql.get_all_stations()
+            vehicules = sparql.get_vehicles()
+        except Exception as e:
+            messages.error(request, f'Erreur lors du chargement des données: {str(e)}')
+    
+    return render(request, 'accounts/trajet_form.html', {
+        'stations': stations,
+        'vehicules': vehicules,
+        'title': 'Créer un Trajet',
+        'submit_label': 'Créer',
+        'fuseki_available': FUSEKI_AVAILABLE
+    })
+
+
+@login_required
+def trajet_delete_view(request, trajet_uri):
+    """Supprime un trajet (réservé aux conducteurs)"""
+    from urllib.parse import unquote
+    
+    # Vérifier que l'utilisateur est conducteur
+    if not request.user.profile.is_conducteur():
+        messages.error(request, 'Seuls les conducteurs peuvent supprimer des trajets.')
+        return redirect('accounts:dashboard')
+    
+    trajet_uri = unquote(trajet_uri)
+    
+    if request.method == 'POST':
+        success = sparql.delete_trajet(trajet_uri)
+        if success:
+            messages.success(request, 'Trajet supprimé avec succès!')
+        else:
+            messages.error(request, 'Erreur lors de la suppression du trajet.')
+        return redirect('accounts:trajets_list')
+    
+    # Récupérer les infos du trajet pour confirmation
+    trajets = sparql.get_all_trajets()
+    trajet_data = None
+    
+    for t in trajets:
+        if t.get('trajet', '') == trajet_uri:
+            trajet_data = {
+                'uri': t.get('trajet', ''),
+                'depart_nom': t.get('departNom', 'N/A'),
+                'arrivee_nom': t.get('arriveeNom', 'N/A'),
+                'vehicule_nom': t.get('vehiculeNom', 'N/A'),
+                'heure_depart': t.get('heureDepart', 'N/A'),
+                'heure_arrivee': t.get('heureArrivee', 'N/A')
+            }
+            break
+    
+    if not trajet_data:
+        messages.error(request, 'Trajet non trouvé.')
+        return redirect('accounts:trajets_list')
+    
+    return render(request, 'accounts/trajet_confirm_delete.html', {
+        'trajet': trajet_data,
+        'fuseki_available': FUSEKI_AVAILABLE
+    })
+
+
+# ============================================
+# GESTION CRUD DES STATIONS (Gestionnaires uniquement)
+# ============================================
+
+@login_required
+def stations_list_view(request):
+    """Liste toutes les stations (réservé aux gestionnaires)"""
+    # Vérifier que l'utilisateur est gestionnaire
+    if not request.user.profile.is_gestionnaire():
+        messages.error(request, 'Seuls les gestionnaires peuvent gérer les stations.')
+        return redirect('accounts:dashboard')
+    
+    context = {
+        'fuseki_available': FUSEKI_AVAILABLE,
+        'stations': []
+    }
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            stations = sparql.get_all_stations()
+            for s in stations:
+                type_uri = s.get('type', '')
+                type_name = type_uri.split('#')[-1] if '#' in type_uri else 'Station'
+                
+                context['stations'].append({
+                    'uri': s.get('station', ''),
+                    'nom': s.get('nom', 'N/A'),
+                    'adresse': s.get('adresse', 'N/A'),
+                    'latitude': s.get('latitude', 'N/A'),
+                    'longitude': s.get('longitude', 'N/A'),
+                    'type': type_name
+                })
+        except Exception as e:
+            context['error'] = str(e)
+    
+    return render(request, 'accounts/stations_list.html', context)
+
+
+@login_required
+def station_create_view(request):
+    """Crée une nouvelle station (réservé aux gestionnaires)"""
+    # Vérifier que l'utilisateur est gestionnaire
+    if not request.user.profile.is_gestionnaire():
+        messages.error(request, 'Seuls les gestionnaires peuvent créer des stations.')
+        return redirect('accounts:dashboard')
+    
+    if request.method == 'POST':
+        # Récupérer les données du formulaire
+        nom = request.POST.get('nom')
+        type_station = request.POST.get('type_station')
+        adresse = request.POST.get('adresse') or None
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+        ville_uri = request.POST.get('ville') or None
+        
+        # Convertir les valeurs numériques
+        try:
+            latitude = float(latitude) if latitude else None
+            longitude = float(longitude) if longitude else None
+        except ValueError:
+            messages.error(request, 'Latitude et longitude doivent être des nombres.')
+            return redirect('accounts:station_create')
+        
+        # Créer la station
+        success = sparql.addStation(
+            nom=nom,
+            type_station=type_station,
+            adresse=adresse,
+            latitude=latitude,
+            longitude=longitude,
+            ville_uri=ville_uri
+        )
+        
+        if success:
+            messages.success(request, 'Station créée avec succès!')
+            return redirect('accounts:stations_list')
+        else:
+            messages.error(request, 'Erreur lors de la création de la station.')
+    
+    # Récupérer les villes pour le formulaire
+    villes = []
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            villes = sparql.get_all_villes()
+        except Exception as e:
+            messages.error(request, f'Erreur lors du chargement des villes: {str(e)}')
+    
+    return render(request, 'accounts/station_form.html', {
+        'villes': villes,
+        'title': 'Créer une Station',
+        'submit_label': 'Créer',
+        'fuseki_available': FUSEKI_AVAILABLE
+    })
+
+
+@login_required
+def station_delete_view(request, station_uri):
+    """Supprime une station (réservé aux gestionnaires)"""
+    from urllib.parse import unquote
+    
+    # Vérifier que l'utilisateur est gestionnaire
+    if not request.user.profile.is_gestionnaire():
+        messages.error(request, 'Seuls les gestionnaires peuvent supprimer des stations.')
+        return redirect('accounts:dashboard')
+    
+    station_uri = unquote(station_uri)
+    
+    if request.method == 'POST':
+        success = sparql.delete_station(station_uri)
+        if success:
+            messages.success(request, 'Station supprimée avec succès!')
+        else:
+            messages.error(request, 'Erreur lors de la suppression de la station.')
+        return redirect('accounts:stations_list')
+    
+    # Récupérer les infos de la station pour confirmation
+    stations = sparql.get_all_stations()
+    station_data = None
+    
+    for s in stations:
+        if s.get('station', '') == station_uri:
+            type_uri = s.get('type', '')
+            type_name = type_uri.split('#')[-1] if '#' in type_uri else 'Station'
+            
+            station_data = {
+                'uri': s.get('station', ''),
+                'nom': s.get('nom', 'N/A'),
+                'adresse': s.get('adresse', 'N/A'),
+                'type': type_name
+            }
+            break
+    
+    if not station_data:
+        messages.error(request, 'Station non trouvée.')
+        return redirect('accounts:stations_list')
+    
+    return render(request, 'accounts/station_confirm_delete.html', {
+        'station': station_data,
+        'fuseki_available': FUSEKI_AVAILABLE
+    })
