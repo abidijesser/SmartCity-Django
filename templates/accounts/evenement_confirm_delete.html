@@ -1,0 +1,67 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}Supprimer un événement - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-2xl space-y-6 p-6">
+    <div class="rounded-2xl border border-red-200 bg-red-50 p-6">
+        <h1 class="mb-2 text-3xl font-bold text-red-900">
+            <i class="fas fa-exclamation-triangle mr-3 text-red-600"></i>Confirmer la suppression
+        </h1>
+    </div>
+
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <h2 class="mb-6 text-xl font-semibold text-gray-900">{{ evenement.typeEvenement }}</h2>
+        
+        <div class="space-y-4">
+            <div class="flex items-start border-b border-gray-200 pb-4">
+                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-orange-100">
+                    <i class="fas fa-tag text-orange-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">Catégorie</p>
+                    <p class="font-semibold text-gray-900">{{ evenement.type }}</p>
+                </div>
+            </div>
+
+            {% if evenement.dateEvenement != 'N/A' %}
+            <div class="flex items-start border-b border-gray-200 pb-4">
+                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-blue-100">
+                    <i class="fas fa-calendar text-blue-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">Date</p>
+                    <p class="font-semibold text-gray-900">{{ evenement.dateEvenement }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if evenement.description != 'N/A' %}
+            <div class="flex items-start">
+                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gray-100">
+                    <i class="fas fa-info-circle text-gray-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">Description</p>
+                    <p class="font-semibold text-gray-900">{{ evenement.description }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="mt-8 flex items-center justify-between border-t border-gray-200 pt-6">
+            <a href="{% url 'accounts:evenements_list' %}" 
+               class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-6 py-3 text-gray-700 transition hover:bg-gray-50">
+                <i class="fas fa-arrow-left mr-2"></i>Annuler
+            </a>
+            <form method="post" class="inline">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="inline-flex items-center rounded-lg bg-red-600 px-6 py-3 text-white transition hover:bg-red-700">
+                    <i class="fas fa-trash mr-2"></i>Supprimer définitivement
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

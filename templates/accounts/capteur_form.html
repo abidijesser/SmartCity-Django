@@ -1,0 +1,44 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}{{ title }} - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl space-y-6 p-6">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">
+            <i class="fas fa-microchip mr-3 text-purple-600"></i>{{ title }}
+        </h1>
+    </div>
+
+    {% if not fuseki_available %}
+    <div class="rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800">
+        <i class="fas fa-exclamation-triangle mr-2"></i> Apache Fuseki n'est pas disponible.
+    </div>
+    {% endif %}
+
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div>
+                <label class="mb-2 block text-sm font-semibold text-gray-900">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="flex gap-4">
+                <button type="submit" class="flex-1 rounded-lg bg-purple-600 px-6 py-3 font-semibold text-white hover:bg-purple-700">
+                    <i class="fas fa-save mr-2"></i>{{ submit_label }}
+                </button>
+                <a href="{% url 'accounts:capteurs_list' %}" class="flex-1 rounded-lg border border-gray-300 bg-white px-6 py-3 text-center font-semibold text-gray-700 hover:bg-gray-50">
+                    <i class="fas fa-times mr-2"></i>Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

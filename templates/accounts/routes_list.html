@@ -1,0 +1,122 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}Liste des Routes - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">
+                <i class="fas fa-road mr-3 text-indigo-600"></i>Gestion des Routes
+            </h1>
+            <p class="mt-2 text-gray-600">Gérer les autoroutes, routes rurales et routes urbaines</p>
+        </div>
+        <a href="{% url 'accounts:route_create' %}" class="rounded-lg bg-indigo-600 px-6 py-3 font-semibold text-white hover:bg-indigo-700">
+            <i class="fas fa-plus mr-2"></i>Nouvelle Route
+        </a>
+    </div>
+
+    <!-- Alertes -->
+    {% if not fuseki_available %}
+    <div class="rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800">
+        <i class="fas fa-exclamation-triangle mr-2"></i> Apache Fuseki n'est pas disponible.
+    </div>
+    {% elif error %}
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <i class="fas fa-times-circle mr-2"></i> Erreur: {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- Liste des routes -->
+    {% if routes %}
+    <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nom</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Longueur</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">État</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for route in routes %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ route.nom }}</td>
+                        <td class="px-6 py-4">
+                            {% if route.type == 'Autoroute' %}
+                                <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+                                    <i class="fas fa-highway mr-1"></i>Autoroute
+                                </span>
+                            {% elif route.type == 'RouteRurale' %}
+                                <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                                    <i class="fas fa-tree mr-1"></i>Route Rurale
+                                </span>
+                            {% elif route.type == 'RouteUrbaine' %}
+                                <span class="rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-800">
+                                    <i class="fas fa-city mr-1"></i>Route Urbaine
+                                </span>
+                            {% else %}
+                                <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800">{{ route.type }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            {% if route.longueur != 'N/A' %}
+                                {{ route.longueur }} km
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if route.etatRoute == 'Bon' %}
+                                <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i>Bon
+                                </span>
+                            {% elif route.etatRoute == 'Moyen' %}
+                                <span class="rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>Moyen
+                                </span>
+                            {% elif route.etatRoute == 'Mauvais' %}
+                                <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
+                                    <i class="fas fa-times-circle mr-1"></i>Mauvais
+                                </span>
+                            {% elif route.etatRoute == 'En Travaux' %}
+                                <span class="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-800">
+                                    <i class="fas fa-wrench mr-1"></i>En Travaux
+                                </span>
+                            {% else %}
+                                <span class="text-sm text-gray-600">{{ route.etatRoute }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-right text-sm">
+                            <a href="{% url 'accounts:route_edit' route.uri %}" class="mr-3 text-brand-600 hover:text-brand-700">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                            <a href="{% url 'accounts:route_delete' route.uri %}" class="text-red-600 hover:text-red-700">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="rounded-2xl border border-gray-200 bg-white p-12 text-center">
+        <i class="fas fa-road mb-4 text-6xl text-gray-300"></i>
+        <h3 class="mb-2 text-lg font-semibold text-gray-900">Aucune route trouvée</h3>
+        <p class="text-gray-600">Commencez par créer votre première route.</p>
+    </div>
+    {% endif %}
+
+    <div class="text-center">
+        <a href="{% url 'accounts:dashboard' %}" class="text-brand-600 hover:text-brand-700">
+            <i class="fas fa-arrow-left mr-2"></i>Retour au dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

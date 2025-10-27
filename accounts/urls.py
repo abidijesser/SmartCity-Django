@@ -32,5 +32,40 @@ urlpatterns = [
     path('stations/', views.stations_list_view, name='stations_list'),
     path('stations/create/', views.station_create_view, name='station_create'),
     path('stations/<path:station_uri>/delete/', views.station_delete_view, name='station_delete'),
+    # Gestion CRUD des horaires
+    path('horaires/', views.horaires_list_view, name='horaires_list'),
+    path('horaires/create/', views.horaire_create_view, name='horaire_create'),
+    path('horaires/<path:horaire_uri>/edit/', views.horaire_detail_view, name='horaire_edit'),
+    path('horaires/<path:horaire_uri>/delete/', views.horaire_delete_view, name='horaire_delete'),
+    
+    # Gestion CRUD des parkings
+    path('parkings/', views.parkings_list_view, name='parkings_list'),
+    path('parkings/create/', views.parking_create_view, name='parking_create'),
+    path('parkings/<path:parking_uri>/edit/', views.parking_detail_view, name='parking_edit'),
+    path('parkings/<path:parking_uri>/delete/', views.parking_delete_view, name='parking_delete'),
+    
+    # Gestion CRUD des événements
+    path('evenements/', views.evenements_list_view, name='evenements_list'),
+    path('evenements/create/', views.evenement_create_view, name='evenement_create'),
+    path('evenements/<path:evenement_uri>/edit/', views.evenement_detail_view, name='evenement_edit'),
+    path('evenements/<path:evenement_uri>/delete/', views.evenement_delete_view, name='evenement_delete'),
+    
+    # Gestion CRUD des capteurs
+    path('capteurs/', views.capteurs_list_view, name='capteurs_list'),
+    path('capteurs/create/', views.capteur_create_view, name='capteur_create'),
+    path('capteurs/<path:capteur_uri>/edit/', views.capteur_detail_view, name='capteur_edit'),
+    path('capteurs/<path:capteur_uri>/delete/', views.capteur_delete_view, name='capteur_delete'),
+    
+    # Gestion CRUD des routes
+    path('routes/', views.routes_list_view, name='routes_list'),
+    path('routes/create/', views.route_create_view, name='route_create'),
+    path('routes/<path:route_uri>/edit/', views.route_detail_view, name='route_edit'),
+    path('routes/<path:route_uri>/delete/', views.route_delete_view, name='route_delete'),
+    
+    # Gestion CRUD des villes
+    path('villes/', views.villes_list_view, name='villes_list'),
+    path('villes/create/', views.ville_create_view, name='ville_create'),
+    path('villes/<path:ville_uri>/edit/', views.ville_detail_view, name='ville_edit'),
+    path('villes/<path:ville_uri>/delete/', views.ville_delete_view, name='ville_delete'),
 ]
 
