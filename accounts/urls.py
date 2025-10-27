@@ -22,5 +22,15 @@ urlpatterns = [
     path('vehicules/create/', views.vehicule_create_view, name='vehicule_create'),
     path('vehicules/<path:vehicule_uri>/edit/', views.vehicule_detail_view, name='vehicule_edit'),
     path('vehicules/<path:vehicule_uri>/delete/', views.vehicule_delete_view, name='vehicule_delete'),
+    
+    # Gestion CRUD des trajets (Conducteurs uniquement)
+    path('trajets/', views.trajets_list_view, name='trajets_list'),
+    path('trajets/create/', views.trajet_create_view, name='trajet_create'),
+    path('trajets/<path:trajet_uri>/delete/', views.trajet_delete_view, name='trajet_delete'),
+    
+    # Gestion CRUD des stations (Gestionnaires uniquement)
+    path('stations/', views.stations_list_view, name='stations_list'),
+    path('stations/create/', views.station_create_view, name='station_create'),
+    path('stations/<path:station_uri>/delete/', views.station_delete_view, name='station_delete'),
 ]
 
