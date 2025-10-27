@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6/"
+     xml:base="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+    <!-- ============================================ -->
+    <!-- STATIONS -->
+    <!-- ============================================ -->
+
+    <!-- StationBus Centre -->
+    <owl:NamedIndividual rdf:about="Station_Centre">
+        <rdf:type rdf:resource="StationBus"/>
+        <nom>Station Centre Ville</nom>
+        <adresse>Place de l'Étoile</adresse>
+        <latitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">36.8065</latitude>
+        <longitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">10.1815</longitude>
+        <situeDans rdf:resource="Ville_Tunis"/>
+    </owl:NamedIndividual>
+
+    <!-- StationBus Ariana -->
+    <owl:NamedIndividual rdf:about="Station_Ariana">
+        <rdf:type rdf:resource="StationBus"/>
+        <nom>Station Ariana</nom>
+        <adresse>Avenue Habib Bourguiba</adresse>
+        <latitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">36.8625</latitude>
+        <longitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">10.3377</longitude>
+        <situeDans rdf:resource="Ville_Tunis"/>
+    </owl:NamedIndividual>
+
+    <!-- StationMetro République -->
+    <owl:NamedIndividual rdf:about="Station_Republique">
+        <rdf:type rdf:resource="StationMetro"/>
+        <nom>Station République</nom>
+        <adresse>Avenue Habib Bourguiba</adresse>
+        <latitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">36.7967</latitude>
+        <longitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">10.1815</longitude>
+        <situeDans rdf:resource="Ville_Tunis"/>
+    </owl:NamedIndividual>
+
+    <!-- ============================================ -->
+    <!-- VÉHICULES -->
+    <!-- ============================================ -->
+
+    <!-- Bus Ligne 1 -->
+    <owl:NamedIndividual rdf:about="Bus_001">
+        <rdf:type rdf:resource="Bus"/>
+        <nom>Bus Ligne 1 - Centre-Ariana</nom>
+        <matricule>TN-1234-BUS</matricule>
+        <capacite rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">50</capacite>
+        <vitesseMoyenne rdf:datatype="http://www.w3.org/2001/XMLSchema#float">35.5</vitesseMoyenne>
+        <dessertVille rdf:resource="Ville_Tunis"/>
+    </owl:NamedIndividual>
+
+    <!-- Bus Ligne 2 -->
+    <owl:NamedIndividual rdf:about="Bus_002">
+        <rdf:type rdf:resource="Bus"/>
+        <nom>Bus Ligne 2 - Express</nom>
+        <matricule>TN-5678-BUS</matricule>
+        <capacite rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">45</capacite>
+        <vitesseMoyenne rdf:datatype="http://www.w3.org/2001/XMLSchema#float">40.0</vitesseMoyenne>
+        <dessertVille rdf:resource="Ville_Tunis"/>
+    </owl:NamedIndividual>
+
+    <!-- Taxi -->
+    <owl:NamedIndividual rdf:about="Taxi_001">
+        <rdf:type rdf:resource="Taxi"/>
+        <nom>Taxi Premium</nom>
+        <matricule>TN-TAX-001</matricule>
+        <capacite rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</capacite>
+        <vitesseMoyenne rdf:datatype="http://www.w3.org/2001/XMLSchema#float">45.0</vitesseMoyenne>
+    </owl:NamedIndividual>
+
+    <!-- ============================================ -->
+    <!-- UTILISATEURS -->
+    <!-- ============================================ -->
+
+    <!-- Conducteur -->
+    <owl:NamedIndividual rdf:about="Utilisateur_Driver1">
+        <rdf:type rdf:resource="Conducteur"/>
+        <nom>Ahmed Ben Salah</nom>
+        <email>ahmed.ben@transport.tn</email>
+        <telephone>+216 98 123 456</telephone>
+        <typeUtilisateur>Conducteur</typeUtilisateur>
+        <effectueTrajet rdf:resource="Trajet_001"/>
+    </owl:NamedIndividual>
+
+    <!-- Passager -->
+    <owl:NamedIndividual rdf:about="Utilisateur_Passenger1">
+        <rdf:type rdf:resource="Passager"/>
+        <nom>Fatma Trabelsi</nom>
+        <email>fatma.trab@email.tn</email>
+        <telephone>+216 92 234 567</telephone>
+        <typeUtilisateur>Passager</typeUtilisateur>
+    </owl:NamedIndividual>
+
+    <!-- Gestionnaire -->
+    <owl:NamedIndividual rdf:about="Utilisateur_Manager1">
+        <rdf:type rdf:resource="GestionnaireTransport"/>
+        <nom>Mohamed Zaidi</nom>
+        <email>mohamed.zaidi@transport.tn</email>
+        <telephone>+216 71 345 678</telephone>
+        <typeUtilisateur>GestionnaireTransport</typeUtilisateur>
+    </owl:NamedIndividual>
+
+    <!-- ============================================ -->
+    <!-- TRAJETS -->
+    <!-- ============================================ -->
+
+    <!-- Trajet Centre -> Ariana -->
+    <owl:NamedIndividual rdf:about="Trajet_001">
+        <rdf:type rdf:resource="TrajetCourt"/>
+        <heureDepart rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2025-10-26T08:00:00</heureDepart>
+        <heureArrivee rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2025-10-26T08:45:00</heureArrivee>
+        <dureeTrajet rdf:datatype="http://www.w3.org/2001/XMLSchema#float">45.0</dureeTrajet>
+        <distanceTrajet rdf:datatype="http://www.w3.org/2001/XMLSchema#float">15.5</distanceTrajet>
+        <aPourDepart rdf:resource="Station_Centre"/>
+        <aPourArrivee rdf:resource="Station_Ariana"/>
+        <utiliseVehicule rdf:resource="Bus_001"/>
+        <aPourHoraire rdf:resource="Horaire_001"/>
+    </owl:NamedIndividual>
+
+    <!-- Trajet Ariana -> Centre -->
+    <owl:NamedIndividual rdf:about="Trajet_002">
+        <rdf:type rdf:resource="TrajetCourt"/>
+        <heureDepart rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2025-10-26T09:00:00</heureDepart>
+        <heureArrivee rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2025-10-26T09:45:00</heureArrivee>
+        <dureeTrajet rdf:datatype="http://www.w3.org/2001/XMLSchema#float">45.0</dureeTrajet>
+        <distanceTrajet rdf:datatype="http://www.w3.org/2001/XMLSchema#float">15.5</distanceTrajet>
+        <aPourDepart rdf:resource="Station_Ariana"/>
+        <aPourArrivee rdf:resource="Station_Centre"/>
+        <utiliseVehicule rdf:resource="Bus_001"/>
+    </owl:NamedIndividual>
+
+    <!-- ============================================ -->
+    <!-- HORAIRES -->
+    <!-- ============================================ -->
+
+    <!-- HoraireBus -->
+    <owl:NamedIndividual rdf:about="Horaire_001">
+        <rdf:type rdf:resource="HoraireBus"/>
+        <heureDepart rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2025-10-26T08:00:00</heureDepart>
+        <heureArrivee rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2025-10-26T08:45</heureArrivee>
+    </owl:NamedIndividual>
+
+    <!-- ============================================ -->
+    <!-- VILLES -->
+    <!-- ============================================ -->
+
+    <owl:NamedIndividual rdf:about="Ville_Tunis">
+        <rdf:type rdf:resource="ZoneIndustrielle"/>
+        <nom>Tunis</nom>
+        <contientStation rdf:resource="Station_Centre"/>
+        <contientStation rdf:resource="Station_Ariana"/>
+        <contientStation rdf:resource="Station_Republique"/>
+    </owl:NamedIndividual>
+
+    <!-- ============================================ -->
+    <!-- PARKINGS -->
+    <!-- ============================================ -->
+
+    <!-- Parking Public -->
+    <owl:NamedIndividual rdf:about="Parking_Centre">
+        <rdf:type rdf:resource="ParkingPublic"/>
+        <nom>Parking Centre Ville</nom>
+        <adresse>Boulevard Habib Bourguiba</adresse>
+        <nombrePlaces rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</nombrePlaces>
+        <placesDisponibles rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">25</placesDisponibles>
+        <latitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">36.7989</latitude>
+        <longitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">10.1825</longitude>
+        <situeDans rdf:resource="Ville_Tunis"/>
+    </owl:NamedIndividual>
+
+    <!-- Parking Privé -->
+    <owl:NamedIndividual rdf:about="Parking_Ariana">
+        <rdf:type rdf:resource="ParkingPrivé"/>
+        <nom>Parking Ariana</nom>
+        <adresse>Zone Commerciale</adresse>
+        <nombrePlaces rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">50</nombrePlaces>
+        <placesDisponibles rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">30</placesDisponibles>
+        <latitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">36.8605</latitude>
+        <longitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">10.3377</longitude>
+        <situeDans rdf:resource="Ville_Tunis"/>
+    </owl:NamedIndividual>
+
+    <!-- ============================================ -->
+    <!-- ROUTES -->
+    <!-- ============================================ -->
+
+    <owl:NamedIndividual rdf:about="Route_Principale">
+        <rdf:type rdf:resource="Autoroute"/>
+        <nom>Autoroute Tunis-Ariana</nom>
+        <relieStation rdf:resource="Station_Centre"/>
+        <relieStation rdf:resource="Station_Ariana"/>
+    </owl:NamedIndividual>
+
+    <!-- ============================================ -->
+    <!-- ÉVÉNEMENTS TRAFIC -->
+    <!-- ============================================ -->
+
+    <!-- Accident -->
+    <owl:NamedIndividual rdf:about="Evenement_001">
+        <rdf:type rdf:resource="Accident"/>
+        <typeEvenement>Accident</typeEvenement>
+        <dateEvenement rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2025-10-26T10:30:00</dateEvenement>
+        <latitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">36.8100</latitude>
+        <longitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">10.2000</longitude>
+        <localiseSur rdf:resource="Route_Principale"/>
+    </owl:NamedIndividual>
+
+    <!-- Travaux -->
+    <owl:NamedIndividual rdf:about="Evenement_002">
+        <rdf:type rdf:resource="Travaux"/>
+        <typeEvenement>Travaux</typeEvenement>
+        <dateEvenement rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2025-10-26T06:00:00</dateEvenement>
+        <latitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">36.8500</latitude>
+        <longitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">10.3200</longitude>
+        <localiseSur rdf:resource="Route_Principale"/>
+    </owl:NamedIndividual>
+
+    <!-- Embouteillage -->
+    <owl:NamedIndividual rdf:about="Evenement_003">
+        <rdf:type rdf:resource="Embouteillage"/>
+        <typeEvenement>Embouteillage</typeEvenement>
+        <dateEvenement rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2025-10-26T17:30:00</dateEvenement>
+        <latitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">36.8050</latitude>
+        <longitude rdf:datatype="http://www.w3.org/2001/XMLSchema#float">10.1900</longitude>
+        <localiseSur rdf:resource="Route_Principale"/>
+    </owl:NamedIndividual>
+
+</rdf:RDF>
+

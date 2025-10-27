@@ -1,0 +1,901 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6/"
+     xml:base="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourArrivee -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourArrivee">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourArrivee"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourArrivee"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourConducteur -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourConducteur">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourConducteur"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Véhicule"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourConducteur"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Utilisateur"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourDepart -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourDepart">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourDepart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourDepart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourHoraire -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourHoraire">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourHoraire"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#aPourHoraire"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Horaire"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#associeCapteur -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#associeCapteur">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#associeCapteur"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#associeCapteur"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Capteur"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#connecteA -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#connecteA">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#connecteA"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#connecteA"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#contientParking -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#contientParking">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#contientParking"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Ville"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#contientParking"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#contientStation -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#contientStation">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#contientStation"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Ville"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#contientStation"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#dependDe -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#dependDe">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#dependDe"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Horaire"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#dependDe"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#dessertVille -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#dessertVille">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#dessertVille"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Véhicule"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#dessertVille"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Ville"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#detecte -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#detecte">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#detecte"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Capteur"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#detecte"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#effectueTrajet -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#effectueTrajet">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#effectueTrajet"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Utilisateur"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#effectueTrajet"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#localiseSur -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#localiseSur">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#localiseSur"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#localiseSur"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Route"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#possedeCapteur -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#possedeCapteur">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#possedeCapteur"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Route"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#possedeCapteur"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Capteur"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#procheDe -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#procheDe">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#procheDe"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#procheDe"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#relieStation -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#relieStation">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#relieStation"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Route"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#relieStation"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#situeDans -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#situeDans">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#situeDans"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#situeDans"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#situeDans"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#situeDans"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Ville"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#subitEvenement -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#subitEvenement">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#subitEvenement"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Route"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#subitEvenement"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#surveille -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#surveille">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#surveille"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Capteur"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#surveille"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Route"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#utiliseVehicule -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#utiliseVehicule">
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#utiliseVehicule"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#utiliseVehicule"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Véhicule"/>
+            </owl:Restriction>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#adresse -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#adresse">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#capacite -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#capacite">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Véhicule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#dateEvenement -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#dateEvenement">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#distanceTrajet -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#distanceTrajet">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#dureeTrajet -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#dureeTrajet">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#email -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#email">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Utilisateur"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#heureArrivee -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#heureArrivee">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Horaire"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#heureDepart -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#heureDepart">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Horaire"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#intensiteTrafic -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#intensiteTrafic">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#CapteurTrafic"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#latitude -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#latitude">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Capteur"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#longitude -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#longitude">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Capteur"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#matricule -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#matricule">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Véhicule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#nom -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#nom">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Route"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Utilisateur"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Ville"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Véhicule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#nombrePlaces -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#nombrePlaces">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#placesDisponibles -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#placesDisponibles">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#telephone -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#telephone">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Utilisateur"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#typeEvenement -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#typeEvenement">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#typeUtilisateur -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#typeUtilisateur">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Utilisateur"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#vitesseMoyenne -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#vitesseMoyenne">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Véhicule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Accident -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Accident">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Autoroute -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Autoroute">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Route"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Bus -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Bus">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Véhicule"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Capteur -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Capteur"/>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#CapteurStationnement -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#CapteurStationnement">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Capteur"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#CapteurTrafic -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#CapteurTrafic">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Capteur"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Conducteur -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Conducteur">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Utilisateur"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Embouteillage -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Embouteillage">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#GestionnaireTransport -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#GestionnaireTransport">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Utilisateur"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Horaire -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Horaire"/>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#HoraireBus -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#HoraireBus">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Horaire"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#HoraireMetro -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#HoraireMetro">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Horaire"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#HoraireTrafic -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#HoraireTrafic">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Horaire"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking"/>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ParkingPrivé -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ParkingPrivé">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ParkingPublic -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ParkingPublic">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Parking"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Passager -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Passager">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Utilisateur"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Route -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Route"/>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#RouteRurale -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#RouteRurale">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Route"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#RouteUrbain -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#RouteUrbain">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Route"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#StationBus -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#StationBus">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#StationMetro -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#StationMetro">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#StationTramway -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#StationTramway">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Station"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Taxi -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Taxi">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Véhicule"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#TrajetCourt -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#TrajetCourt">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#TrajetLong -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#TrajetLong">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#TrajetTouristique -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#TrajetTouristique">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Trajet"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Travaux -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Travaux">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Utilisateur -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Utilisateur"/>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Ville -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Ville"/>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Voiture -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Voiture">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Véhicule"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Véhicule -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Véhicule"/>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ZoneIndustrielle -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ZoneIndustrielle">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Ville"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ZoneRésidentielle -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ZoneRésidentielle">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#Ville"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6#ÉvénementTrafic"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+

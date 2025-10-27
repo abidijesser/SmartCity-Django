@@ -1,0 +1,105 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}Gestion des Véhicules - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+    <!-- Header -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="mb-2 text-3xl font-bold text-gray-900">
+                    <i class="fas fa-car mr-3 text-brand-600"></i>Gestion des Véhicules
+                </h1>
+                <p class="text-gray-600">Gérer les véhicules de transport (Bus, Taxis, etc.)</p>
+            </div>
+            <a href="{% url 'accounts:vehicule_create' %}" class="inline-flex items-center justify-center rounded-lg bg-brand-600 px-5 py-3 text-base font-medium text-white transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                <i class="fas fa-plus mr-2"></i> Créer un véhicule
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert -->
+    {% if fuseki_available %}
+    <!-- <div class="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+        <i class="fas fa-check-circle mr-2"></i> Fuseki est disponible. Les données sont en temps réel.
+    </div> -->
+    {% else %}
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <i class="fas fa-times-circle mr-2"></i> Fuseki n'est pas disponible. Démarrez-le sur http://localhost:3030
+    </div>
+    {% endif %}
+
+    <!-- Error -->
+    {% if error %}
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <i class="fas fa-exclamation-triangle mr-2"></i> Erreur: {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- Results Table -->
+    <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-6 py-5">
+            <h5 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-list mr-2 text-brand-600"></i>Liste des Véhicules ({{ vehicules|length }})
+            </h5>
+        </div>
+        
+        {% if vehicules %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nom</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Matricule</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Capacité</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Vitesse</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    {% for vehicule in vehicules %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ vehicule.nom }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex rounded-full bg-brand-100 px-3 py-1 text-xs font-medium text-brand-800">
+                                {% if vehicule.type == "http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6/Bus" %}
+                                    Bus
+                                {% elif vehicule.type == "http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6/Taxi" %}
+                                    Taxi
+                                {% else %}
+                                    Voiture
+                                {% endif %}
+
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ vehicule.matricule }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ vehicule.capacite }} passagers</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ vehicule.vitesse_moyenne }} km/h</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <a href="{% url 'accounts:vehicule_edit' vehicule.uri|urlencode %}" class="text-brand-600 hover:text-brand-700 mr-3">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                            <a href="{% url 'accounts:vehicule_delete' vehicule.uri|urlencode %}" class="text-red-600 hover:text-red-700">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-8 text-center text-gray-500">
+            <i class="fas fa-inbox mb-4 text-4xl"></i>
+            <p>Aucun véhicule trouvé.</p>
+            {% if fuseki_available %}
+            <p class="text-sm mt-2">Créez votre premier véhicule en cliquant sur le bouton "Créer un véhicule".</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

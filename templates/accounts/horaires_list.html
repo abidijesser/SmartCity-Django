@@ -1,0 +1,114 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}Gestion des Horaires - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-6">
+        <div>
+            <h1 class="mb-2 text-3xl font-bold text-gray-900">
+                <i class="fas fa-clock mr-3 text-brand-600"></i>Gestion des Horaires
+            </h1>
+            <p class="text-gray-600">Gérez tous les horaires de votre système de transport</p>
+        </div>
+        <a href="{% url 'accounts:horaire_create' %}" 
+           class="inline-flex items-center rounded-lg bg-brand-600 px-6 py-3 text-white transition hover:bg-brand-700">
+            <i class="fas fa-plus mr-2"></i>Créer un horaire
+        </a>
+    </div>
+
+    <!-- Messages -->
+    {% if not fuseki_available %}
+    <div class="rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800">
+        <i class="fas fa-exclamation-triangle mr-2"></i> Apache Fuseki n'est pas disponible.
+    </div>
+    {% elif error %}
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <i class="fas fa-times-circle mr-2"></i> Erreur: {{ error }}
+    </div>
+    {% endif %}
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="rounded-lg border {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-800{% else %}border-red-200 bg-red-50 text-red-800{% endif %} p-4 text-sm">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Liste des horaires -->
+    <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-6 py-5">
+            <h3 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-list mr-2 text-brand-600"></i>Liste des horaires ({{ horaires|length }})
+            </h3>
+        </div>
+        
+        {% if horaires %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Heure Départ</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Heure Arrivée</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Jour</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Type/Catégorie</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for horaire in horaires %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                            <i class="fas fa-arrow-right mr-2 text-green-600"></i>{{ horaire.heureDepart }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            <i class="fas fa-flag-checkered mr-2 text-red-600"></i>{{ horaire.heureArrivee }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">{{ horaire.jour }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="rounded-full bg-brand-100 px-3 py-1 text-xs font-medium text-brand-800">{{ horaire.type }}</span>
+                        </td>
+                        <td class="px-6 py-4 text-right text-sm">
+                            <div class="flex justify-end space-x-2">
+                                <a href="{% url 'accounts:horaire_edit' horaire.uri %}" 
+                                   class="text-blue-600 hover:text-blue-900" 
+                                   title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'accounts:horaire_delete' horaire.uri %}" 
+                                   class="text-red-600 hover:text-red-900" 
+                                   title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-12 text-center">
+            <i class="fas fa-clock mb-4 text-6xl text-gray-300"></i>
+            <h3 class="mb-2 text-lg font-medium text-gray-900">Aucun horaire trouvé</h3>
+            <p class="mb-4 text-gray-600">Commencez par créer votre premier horaire.</p>
+            <a href="{% url 'accounts:horaire_create' %}" 
+               class="inline-flex items-center rounded-lg bg-brand-600 px-6 py-3 text-white transition hover:bg-brand-700">
+                <i class="fas fa-plus mr-2"></i>Créer un horaire
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="text-center">
+        <a href="{% url 'accounts:dashboard' %}" 
+           class="inline-flex items-center text-brand-600 hover:text-brand-700">
+            <i class="fas fa-arrow-left mr-2"></i>Retour au dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

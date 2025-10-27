@@ -1,0 +1,149 @@
+# Requête SPARQL pour insérer les données de test
+# À exécuter dans l'interface Fuseki : http://localhost:3030/fuseki
+
+PREFIX transport: <http://www.semanticweb.org/dell/ontologies/2025/9/untitled-ontology-6/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+INSERT DATA {
+    # Stations
+    transport:Station_Centre rdf:type transport:StationBus ;
+        transport:nom "Station Centre Ville" ;
+        transport:adresse "Place de l'Étoile" ;
+        transport:latitude "36.8065"^^xsd:float ;
+        transport:longitude "10.1815"^^xsd:float ;
+        transport:situeDans transport:Ville_Tunis .
+    
+    transport:Station_Ariana rdf:type transport:StationBus ;
+        transport:nom "Station Ariana" ;
+        transport:adresse "Avenue Habib Bourguiba" ;
+        transport:latitude "36.8625"^^xsd:float ;
+        transport:longitude "10.3377"^^xsd:float ;
+        transport:situeDans transport:Ville_Tunis .
+    
+    transport:Station_Republique rdf:type transport:StationMetro ;
+        transport:nom "Station République" ;
+        transport:adresse "Avenue Habib Bourguiba" ;
+        transport:latitude "36.7967"^^xsd:float ;
+        transport:longitude "10.1815"^^xsd:float ;
+        transport:situeDans transport:Ville_Tunis .
+
+    # Véhicules
+    transport:Bus_001 rdf:type transport:Bus ;
+        transport:nom "Bus Ligne 1 - Centre-Ariana" ;
+        transport:matricule "TN-1234-BUS" ;
+        transport:capacite "50"^^xsd:integer ;
+        transport:vitesseMoyenne "35.5"^^xsd:float ;
+        transport:dessertVille transport:Ville_Tunis .
+    
+    transport:Bus_002 rdf:type transport:Bus ;
+        transport:nom "Bus Ligne 2 - Express" ;
+        transport:matricule "TN-5678-BUS" ;
+        transport:capacite "45"^^xsd:integer ;
+        transport:vitesseMoyenne "40.0"^^xsd:float ;
+        transport:dessertVille transport:Ville_Tunis .
+    
+    transport:Taxi_001 rdf:type transport:Taxi ;
+        transport:nom "Taxi Premium" ;
+        transport:matricule "TN-TAX-001" ;
+        transport:capacite "4"^^xsd:integer ;
+        transport:vitesseMoyenne "45.0"^^xsd:float .
+
+    # Utilisateurs
+    transport:Utilisateur_Driver1 rdf:type transport:Conducteur ;
+        transport:nom "Ahmed Ben Salah" ;
+        transport:email "ahmed.ben@transport.tn" ;
+        transport:telephone "+216 98 123 456" ;
+        transport:typeUtilisateur "Conducteur" .
+    
+    transport:Utilisateur_Passenger1 rdf:type transport:Passager ;
+        transport:nom "Fatma Trabelsi" ;
+        transport:email "fatma.trab@email.tn" ;
+        transport:telephone "+216 92 234 567" ;
+        transport:typeUtilisateur "Passager" .
+    
+    transport:Utilisateur_Manager1 rdf:type transport:GestionnaireTransport ;
+        transport:nom "Mohamed Zaidi" ;
+        transport:email "mohamed.zaidi@transport.tn" ;
+        transport:telephone "+216 71 345 678" ;
+        transport:typeUtilisateur "GestionnaireTransport" .
+
+    # Trajets
+    transport:Trajet_001 rdf:type transport:TrajetCourt ;
+        transport:heureDepart "2025-10-26T08:00:00"^^xsd:dateTime ;
+        transport:heureArrivee "2025-10-26T08:45:00"^^xsd:dateTime ;
+        transport:dureeTrajet "45.0"^^xsd:float ;
+        transport:distanceTrajet "15.5"^^xsd:float ;
+        transport:aPourDepart transport:Station_Centre ;
+        transport:aPourArrivee transport:Station_Ariana ;
+        transport:utiliseVehicule transport:Bus_001 .
+    
+    transport:Trajet_002 rdf:type transport:TrajetCourt ;
+        transport:heureDepart "2025-10-26T09:00:00"^^xsd:dateTime ;
+        transport:heureArrivee "2025-10-26T09:45:00"^^xsd:dateTime ;
+        transport:dureeTrajet "45.0"^^xsd:float ;
+        transport:distanceTrajet "15.5"^^xsd:float ;
+        transport:aPourDepart transport:Station_Ariana ;
+        transport:aPourArrivee transport:Station_Centre ;
+        transport:utiliseVehicule transport:Bus_001 .
+
+    # Horaires
+    transport:Horaire_001 rdf:type transport:HoraireBus ;
+        transport:heureDepart "2025-10-26T08:00:00"^^xsd:dateTime ;
+        transport:heureArrivee "2025-10-26T08:45:00"^^xsd:dateTime .
+
+    # Ville
+    transport:Ville_Tunis rdf:type transport:ZoneIndustrielle ;
+        transport:nom "Tunis" ;
+        transport:contientStation transport:Station_Centre ;
+        transport:contientStation transport:Station_Ariana ;
+        transport:contientStation transport:Station_Republique .
+
+    # Parkings
+    transport:Parking_Centre rdf:type transport:ParkingPublic ;
+        transport:nom "Parking Centre Ville" ;
+        transport:adresse "Boulevard Habib Bourguiba" ;
+        transport:nombrePlaces "100"^^xsd:integer ;
+        transport:placesDisponibles "25"^^xsd:integer ;
+        transport:latitude "36.7989"^^xsd:float ;
+        transport:longitude "10.1825"^^xsd:float ;
+        transport:situeDans transport:Ville_Tunis .
+    
+    transport:Parking_Ariana rdf:type transport:ParkingPrivé ;
+        transport:nom "Parking Ariana" ;
+        transport:adresse "Zone Commerciale" ;
+        transport:nombrePlaces "50"^^xsd:integer ;
+        transport:placesDisponibles "30"^^xsd:integer ;
+        transport:latitude "36.8605"^^xsd:float ;
+        transport:longitude "10.3377"^^xsd:float ;
+        transport:situeDans transport:Ville_Tunis .
+
+    # Route
+    transport:Route_Principale rdf:type transport:Autoroute ;
+        transport:nom "Autoroute Tunis-Ariana" ;
+        transport:relieStation transport:Station_Centre ;
+        transport:relieStation transport:Station_Ariana .
+
+    # Événements
+    transport:Evenement_001 rdf:type transport:Accident ;
+        transport:typeEvenement "Accident" ;
+        transport:dateEvenement "2025-10-26T10:30:00"^^xsd:dateTime ;
+        transport:latitude "36.8100"^^xsd:float ;
+        transport:longitude "10.2000"^^xsd:float ;
+        transport:localiseSur transport:Route_Principale .
+    
+    transport:Evenement_002 rdf:type transport:Travaux ;
+        transport:typeEvenement "Travaux" ;
+        transport:dateEvenement "2025-10-26T06:00:00"^^xsd:dateTime ;
+        transport:latitude "36.8500"^^xsd:float ;
+        transport:longitude "10.3200"^^xsd:float ;
+        transport:localiseSur transport:Route_Principale .
+    
+    transport:Evenement_003 rdf:type transport:Embouteillage ;
+        transport:typeEvenement "Embouteillage" ;
+        transport:dateEvenement "2025-10-26T17:30:00"^^xsd:dateTime ;
+        transport:latitude "36.8050"^^xsd:float ;
+        transport:longitude "10.1900"^^xsd:float ;
+        transport:localiseSur transport:Route_Principale .
+}
+

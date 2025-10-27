@@ -1,0 +1,83 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}Supprimer un horaire - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-2xl space-y-6 p-6">
+    <div class="rounded-2xl border border-red-200 bg-red-50 p-6">
+        <h1 class="mb-2 text-3xl font-bold text-red-900">
+            <i class="fas fa-exclamation-triangle mr-3 text-red-600"></i>Confirmer la suppression
+        </h1>
+        <p class="text-red-700">Cette action est irréversible</p>
+    </div>
+
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <h2 class="mb-6 text-xl font-semibold text-gray-900">
+            <i class="fas fa-clock mr-2 text-brand-600"></i>Détails de l'horaire à supprimer
+        </h2>
+        
+        <div class="space-y-4">
+            <div class="flex items-start border-b border-gray-200 pb-4">
+                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-brand-100">
+                    <i class="fas fa-tag text-brand-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">Type/Catégorie</p>
+                    <p class="font-semibold text-gray-900">{{ horaire.type }}</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start border-b border-gray-200 pb-4">
+                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-green-100">
+                    <i class="fas fa-arrow-right text-green-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">Heure de départ</p>
+                    <p class="font-semibold text-gray-900">{{ horaire.heureDepart }}</p>
+                </div>
+            </div>
+
+            <div class="flex items-start border-b border-gray-200 pb-4">
+                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-red-100">
+                    <i class="fas fa-flag-checkered text-red-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">Heure d'arrivée</p>
+                    <p class="font-semibold text-gray-900">{{ horaire.heureArrivee }}</p>
+                </div>
+            </div>
+
+            <div class="flex items-start">
+                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-blue-100">
+                    <i class="fas fa-calendar-day text-blue-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">Jour</p>
+                    <p class="font-semibold text-gray-900">{{ horaire.jour }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 rounded-lg border border-red-200 bg-red-50 p-4">
+            <p class="text-sm text-red-800">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <strong>Attention:</strong> Êtes-vous sûr de vouloir supprimer cet horaire ?
+            </p>
+        </div>
+
+        <div class="mt-8 flex items-center justify-between border-t border-gray-200 pt-6">
+            <a href="{% url 'accounts:horaires_list' %}" 
+               class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-6 py-3 text-gray-700 transition hover:bg-gray-50">
+                <i class="fas fa-arrow-left mr-2"></i>Annuler
+            </a>
+            <form method="post" class="inline">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="inline-flex items-center rounded-lg bg-red-600 px-6 py-3 text-white transition hover:bg-red-700">
+                    <i class="fas fa-trash mr-2"></i>Supprimer définitivement
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

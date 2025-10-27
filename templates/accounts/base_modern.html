@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Système de Transport Intelligent{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'brand': {
+                            50: '#f2f7ff',
+                            100: '#ecf3ff',
+                            200: '#dde9ff',
+                            300: '#c2d6ff',
+                            400: '#9cb9ff',
+                            500: '#465fff',
+                            600: '#3641f5',
+                            700: '#2a31d8',
+                            800: '#252dae',
+                            900: '#262e89',
+                            950: '#161950',
+                        },
+                        'blue-light': {
+                            25: '#f5fbff',
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#b9e6fe',
+                            300: '#7cd4fd',
+                            400: '#36bffa',
+                            500: '#0ba5ec',
+                            600: '#0086c9',
+                            700: '#026aa2',
+                            800: '#065986',
+                            900: '#0b4a6f',
+                            950: '#062c41',
+                        },
+                        'success': {
+                            25: '#f6fef9',
+                            50: '#ecfdf3',
+                            100: '#d1fadf',
+                            200: '#a6f4c5',
+                            300: '#6ce9a6',
+                            400: '#32d583',
+                            500: '#12b76a',
+                            600: '#079455',
+                            700: '#027a48',
+                            800: '#05603a',
+                            900: '#054f31',
+                            950: '#053321',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: white !important;
+        }
+        
+        /* Forcer le mode clair */
+        html, body {
+            background-color: white !important;
+            color: #1f2937 !important;
+        }
+        
+        .dark {
+            display: none !important;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-white">
+    {% block header_content %}
+    {% if user.is_authenticated %}
+    <!-- Header -->
+    <header class="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
+        <div class="flex items-center justify-between px-6 py-4">
+            <div class="flex items-center space-x-6">
+                <a href="{% url 'accounts:dashboard' %}" class="flex items-center space-x-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-500">
+                        <i class="fas fa-bus text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">Transport Intelligent</span>
+                </a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'accounts:dashboard' %}" class="flex items-center space-x-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'accounts:profile' %}" class="flex items-center space-x-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100">
+                    <i class="fas fa-user"></i>
+                    <span>Profil</span>
+                </a>
+                <div class="h-6 w-px bg-gray-300"></div>
+                <a href="{% url 'accounts:logout' %}" class="flex items-center space-x-2 rounded-lg px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
+                </a>
+                <div class="flex items-center space-x-2 rounded-lg bg-gray-100 px-3 py-2">
+                    <i class="fas fa-user-circle text-gray-600"></i>
+                    <span class="text-sm font-medium text-gray-900">{{ profile.get_role_display }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% endif %}
+    {% endblock %}
+
+    {% block messages %}
+    <!-- Messages -->
+    {% if messages %}
+        <div class="mx-6 mt-6 space-y-2">
+            {% for message in messages %}
+                <div class="flex items-center justify-between rounded-lg border border-{{ message.tags }}-200 bg-{{ message.tags }}-50 px-4 py-3 text-sm text-{{ message.tags }}-800">
+                    <div class="flex items-center space-x-2">
+                        {% if message.tags == 'success' %}
+                            <i class="fas fa-check-circle"></i>
+                        {% elif message.tags == 'error' %}
+                            <i class="fas fa-times-circle"></i>
+                        {% elif message.tags == 'warning' %}
+                            <i class="fas fa-exclamation-triangle"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle"></i>
+                        {% endif %}
+                        <span>{{ message }}</span>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-{{ message.tags }}-600 hover:text-{{ message.tags }}-800">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endblock %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block footer %}
+    <!-- Footer -->
+    <footer class="mt-12 border-t border-gray-200 bg-white px-6 py-4">
+        <div class="flex items-center justify-between text-sm text-gray-600">
+            <p>&copy; 2025 Système de Transport Intelligent. Tous droits réservés.</p>
+            <p class="flex items-center space-x-2">
+                <span>Développé avec</span>
+                <i class="fab fa-python text-brand-600"></i>
+                <span>Django +</span>
+                <i class="fas fa-project-diagram text-brand-600"></i>
+                <span>RDF/OWL</span>
+            </p>
+        </div>
+    </footer>
+    {% endblock %}
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+

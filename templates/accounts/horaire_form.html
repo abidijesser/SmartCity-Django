@@ -1,0 +1,79 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}{{ title }} - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl space-y-6 p-6">
+    <div class="rounded-2xl border border-gray-200 bg-white p-6">
+        <h1 class="mb-2 text-3xl font-bold text-gray-900">
+            <i class="fas fa-clock mr-3 text-brand-600"></i>{{ title }}
+        </h1>
+        <p class="text-gray-600">{% if horaire %}Modifiez les informations de l'horaire{% else %}Ajoutez un nouvel horaire{% endif %}</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="rounded-lg border {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-800{% else %}border-red-200 bg-red-50 text-red-800{% endif %} p-4 text-sm">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div>
+                <label class="mb-2 block text-sm font-medium text-gray-900">
+                    <i class="fas fa-tag mr-2 text-brand-600"></i>{{ form.type_horaire.label }}
+                </label>
+                {{ form.type_horaire }}
+                {% if form.type_horaire.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.type_horaire.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-900">
+                        <i class="fas fa-clock mr-2 text-green-600"></i>{{ form.heureDepart.label }}
+                    </label>
+                    {{ form.heureDepart }}
+                    {% if form.heureDepart.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.heureDepart.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-900">
+                        <i class="fas fa-clock mr-2 text-red-600"></i>{{ form.heureArrivee.label }}
+                    </label>
+                    {{ form.heureArrivee }}
+                    {% if form.heureArrivee.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.heureArrivee.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label class="mb-2 block text-sm font-medium text-gray-900">
+                    <i class="fas fa-calendar-day mr-2 text-brand-600"></i>{{ form.jour.label }}
+                </label>
+                {{ form.jour }}
+                <p class="mt-1 text-xs text-gray-500">Optionnel - Laissez vide pour tous les jours</p>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-gray-200 pt-6">
+                <a href="{% url 'accounts:horaires_list' %}" 
+                   class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-6 py-3 text-gray-700 transition hover:bg-gray-50">
+                    <i class="fas fa-times mr-2"></i>Annuler
+                </a>
+                <button type="submit" 
+                        class="inline-flex items-center rounded-lg bg-brand-600 px-6 py-3 text-white transition hover:bg-brand-700">
+                    <i class="fas fa-save mr-2"></i>{{ submit_label }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

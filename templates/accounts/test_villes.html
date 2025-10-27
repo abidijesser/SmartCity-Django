@@ -1,0 +1,81 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}Test Villes - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+    <!-- Header -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <h1 class="mb-2 text-3xl font-bold text-gray-900">
+            <i class="fas fa-city mr-3 text-brand-600"></i>Test Villes
+        </h1>
+        <p class="text-gray-600">Liste de toutes les villes de l'ontologie</p>
+    </div>
+
+    <!-- Links -->
+    <div class="flex items-center space-x-2">
+        <a href="{% url 'accounts:test_home' %}" class="text-sm text-brand-600 hover:text-brand-700">
+            <i class="fas fa-arrow-left mr-1"></i> Retour aux tests
+        </a>
+    </div>
+
+    <!-- Alert -->
+    {% if fuseki_available %}
+    <div class="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+        <i class="fas fa-check-circle mr-2"></i> Fuseki est disponible. Données en temps réel.
+    </div>
+    {% else %}
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <i class="fas fa-times-circle mr-2"></i> Fuseki n'est pas disponible.
+    </div>
+    {% endif %}
+
+    <!-- Error -->
+    {% if error %}
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <i class="fas fa-exclamation-triangle mr-2"></i> Erreur: {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- Results Table -->
+    <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-6 py-5">
+            <h5 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-city mr-2 text-brand-600"></i>Villes ({{ villes|length }})
+            </h5>
+        </div>
+        
+        {% if villes %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">URI</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nom</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Latitude</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Longitude</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    {% for ville in villes %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm text-gray-900 break-all">{{ ville.uri }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ ville.nom }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ ville.latitude }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ ville.longitude }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-8 text-center text-gray-500">
+            <i class="fas fa-inbox mb-4 text-4xl"></i>
+            <p>Aucune ville trouvée dans l'ontologie.</p>
+            <p class="text-sm mt-2">Vérifiez que des individus de type Ville existent dans votre ontologie.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

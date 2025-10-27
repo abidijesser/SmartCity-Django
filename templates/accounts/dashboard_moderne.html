@@ -1,0 +1,292 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: white;
+    }
+</style>
+{% endblock %}
+
+{% block title %}{% if profile.is_conducteur %}Dashboard Conducteur{% elif profile.is_passager %}Dashboard Passager{% elif profile.is_gestionnaire %}Dashboard Gestionnaire{% else %}Dashboard{% endif %} - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+    <!-- Welcome Header -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <div class="flex items-center justify-between">
+            <div>
+                {% if profile.is_conducteur %}
+                    <h1 class="mb-2 text-3xl font-bold text-gray-900 text-gray-900">
+                        <i class="fas fa-car mr-3 text-brand-600"></i>Dashboard Conducteur
+                    </h1>
+                    <p class="text-gray-600 text-gray-600">Bienvenue, <strong>{{ user.username }}</strong> ! Gérer vos trajets et véhicules.</p>
+                {% elif profile.is_passager %}
+                    <h1 class="mb-2 text-3xl font-bold text-gray-900 text-gray-900">
+                        <i class="fas fa-user mr-3 text-brand-600"></i>Dashboard Passager
+                    </h1>
+                    <p class="text-gray-600 text-gray-600">Bienvenue, <strong>{{ user.username }}</strong> ! Recherchez et réservez vos trajets.</p>
+                {% elif profile.is_gestionnaire %}
+                    <h1 class="mb-2 text-3xl font-bold text-gray-900 text-gray-900">
+                        <i class="fas fa-cog mr-3 text-brand-600"></i>Dashboard Gestionnaire Transport
+                    </h1>
+                    <p class="text-gray-600 text-gray-600">Bienvenue, <strong>{{ user.username }}</strong> ! Gérez votre système de transport.</p>
+                {% else %}
+                    <h1 class="mb-2 text-3xl font-bold text-gray-900 text-gray-900">
+                        <i class="fas fa-tachometer-alt mr-3 text-brand-600"></i>Dashboard
+                    </h1>
+                    <p class="text-gray-600 text-gray-600">Bienvenue, <strong>{{ user.username }}</strong> !</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Profil Info -->
+    <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-6 py-5border-gray-800">
+            <h3 class="text-lg font-semibold text-gray-900 text-gray-900">
+                <i class="fas fa-info-circle mr-2 text-brand-600"></i>Informations du Profil
+            </h3>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div class="flex items-center space-x-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100bg-gray-800">
+                        <i class="fas fa-user text-gray-600 text-gray-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 text-gray-600">Rôle</p>
+                        <p class="font-semibold text-gray-900 text-gray-900">{{ profile.get_role_display }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100bg-gray-800">
+                        <i class="fas fa-envelope text-gray-600 text-gray-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 text-gray-600">Email</p>
+                        <p class="font-semibold text-gray-900 text-gray-900">{{ user.email|default:"Non renseigné" }}</p>
+                    </div>
+                </div>
+                {% if profile.telephone %}
+                <div class="flex items-center space-x-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100bg-gray-800">
+                        <i class="fas fa-phone text-gray-600 text-gray-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 text-gray-600">Téléphone</p>
+                        <p class="font-semibold text-gray-900 text-gray-900">{{ profile.telephone }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                {% if profile.linked_uri %}
+                <div class="flex items-center space-x-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100bg-gray-800">
+                        <i class="fas fa-link text-gray-600 text-gray-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 text-gray-600">URI RDF</p>
+                        <a href="{{ profile.linked_uri }}" target="_blank" class="font-semibold text-brand-600 hover:text-brand-700 text-brand-600hover:text-brand-300">Voir l'ontologie →</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Alertes Fuseki -->
+    {% if not fuseki_available %}
+    <div class="rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800border-orange-900bg-orange-900text-orange-400">
+        <i class="fas fa-exclamation-triangle mr-2"></i> Apache Fuseki n'est pas disponible. Veuillez démarrer le serveur Fuseki pour voir les données RDF.
+    </div>
+    {% elif sparql_error %}
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800border-red-900bg-red-900text-red-400">
+        <i class="fas fa-times-circle mr-2"></i> Erreur SPARQL: {{ sparql_error }}
+    </div>
+    {% endif %}
+
+    <!-- Action Cards selon le rôle -->
+    {% if profile.is_conducteur %}
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
+        <!-- Mes Trajets -->
+        <div class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-brand-300 hover:shadow-lg">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-brand-100">
+                <i class="fas fa-route text-brand-600 text-2xl text-brand-600"></i>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Mes Trajets</h3>
+            <p class="text-sm text-gray-600 text-gray-600">Gérer et consulter vos trajets planifiés</p>
+        </div>
+
+        <!-- Mon Véhicule -->
+        <a href="{% url 'accounts:vehicules_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-green-300 hover:shadow-lg block">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-green-100">
+                <i class="fas fa-car-side text-green-600 text-2xl text-green-600"></i>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Mon Véhicule</h3>
+            <p class="text-sm text-gray-600 text-gray-600">Informations et gestion du véhicule</p>
+        </a>
+
+        <!-- Horaires -->
+        <a href="{% url 'accounts:horaires_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-blue-300 hover:shadow-lg block">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100">
+                <i class="fas fa-clock text-blue-600 text-2xl text-blue-600"></i>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Horaires</h3>
+            <p class="text-sm text-gray-600 text-gray-600">Consulter les horaires de transport</p>
+        </a>
+
+        <!-- Parkings -->
+        <a href="{% url 'accounts:parkings_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-purple-300 hover:shadow-lg block">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-purple-100">
+                <i class="fas fa-parking text-purple-600 text-2xl text-purple-600"></i>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Parkings</h3>
+            <p class="text-sm text-gray-600 text-gray-600">Gérer les parkings disponibles</p>
+        </a>
+
+        <!-- Événements -->
+        <a href="{% url 'accounts:evenements_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-orange-300 hover:shadow-lg block">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-orange-100">
+                <i class="fas fa-exclamation-triangle text-orange-600 text-2xl text-orange-600"></i>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Événements</h3>
+            <p class="text-sm text-gray-600 text-gray-600">Événements de trafic en cours</p>
+        </a>
+
+        <!-- Capteurs -->
+        <a href="{% url 'accounts:capteurs_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-purple-300 hover:shadow-lg block">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-purple-100">
+                <i class="fas fa-microchip text-purple-600 text-2xl text-purple-600"></i>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Capteurs</h3>
+            <p class="text-sm text-gray-600 text-gray-600">Capteurs de stationnement et trafic</p>
+        </a>
+
+        <!-- Routes -->
+        <a href="{% url 'accounts:routes_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-indigo-300 hover:shadow-lg block">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-100">
+                <i class="fas fa-road text-indigo-600 text-2xl text-indigo-600"></i>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Routes</h3>
+            <p class="text-sm text-gray-600 text-gray-600">Autoroutes, routes rurales et urbaines</p>
+        </a>
+
+        <!-- Villes -->
+        <a href="{% url 'accounts:villes_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-teal-300 hover:shadow-lg block">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-teal-100">
+                <i class="fas fa-city text-teal-600 text-2xl text-teal-600"></i>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Villes</h3>
+            <p class="text-sm text-gray-600 text-gray-600">Zones industrielles et résidentielles</p>
+        </a>
+    </div>
+
+    {% elif profile.is_passager %}
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <!-- Rechercher Trajet -->
+        <div class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-brand-300 hover:shadow-lg">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-brand-100">
+                <i class="fas fa-search-location text-brand-600 text-2xl text-brand-600"></i>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Rechercher un Trajet</h3>
+            <p class="text-sm text-gray-600 text-gray-600">Trouver le meilleur trajet pour vous</p>
+        </div>
+
+        <!-- Mes Trajets -->
+        <div class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-green-300 hover:shadow-lg">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-green-100">
+                <i class="fas fa-map-marked-alt text-green-600 text-2xl text-green-600"></i>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Mes Trajets test</h3>
+            <p class="text-sm text-gray-600 text-gray-600">Trajets favoris et récents</p>
+        </div>
+
+        <!-- Carte Interactive -->
+        <div class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-blue-300 hover:shadow-lg">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100">
+                <i class="fas fa-map text-blue-600 text-2xl text-blue-600"></i>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Carte Interactive</h3>
+            <p class="text-sm text-gray-600 text-gray-600">Voir les stations et bus en temps réel</p>
+        </div>
+    </div>
+
+    {% endif %}
+
+    <!-- Données SPARQL pour Gestionnaire -->
+    {% if profile.is_gestionnaire and fuseki_available and not sparql_error %}
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div class="rounded-2xl border border-gray-200 bg-white p-6">
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-light-100bg-blue-light-900">
+                <i class="fas fa-map-marker-alt text-blue-light-600 text-xltext-blue-light-400"></i>
+            </div>
+            <p class="text-sm text-gray-600 text-gray-600">Stations</p>
+            <h3 class="mt-2 text-3xl font-bold text-gray-900 text-gray-900">{% if stations %}{{ stations|length }}{% else %}0{% endif %}</h3>
+        </div>
+
+        <div class="rounded-2xl border border-gray-200 bg-white p-6">
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100bg-orange-900">
+                <i class="fas fa-bus text-orange-600 text-xltext-orange-400"></i>
+            </div>
+            <p class="text-sm text-gray-600 text-gray-600">Véhicules</p>
+            <h3 class="mt-2 text-3xl font-bold text-gray-900 text-gray-900">{% if vehicles %}{{ vehicles|length }}{% else %}0{% endif %}</h3>
+        </div>
+
+        <div class="rounded-2xl border border-gray-200 bg-white p-6">
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-yellow-100bg-yellow-900">
+                <i class="fas fa-exclamation-triangle text-yellow-600 text-xltext-yellow-400"></i>
+            </div>
+            <p class="text-sm text-gray-600 text-gray-600">Événements</p>
+            <h3 class="mt-2 text-3xl font-bold text-gray-900 text-gray-900">{% if events %}{{ events|length }}{% else %}0{% endif %}</h3>
+        </div>
+
+        <div class="rounded-2xl border border-gray-200 bg-white p-6">
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100bg-purple-900">
+                <i class="fas fa-users text-purple-600 text-xltext-purple-400"></i>
+            </div>
+            <p class="text-sm text-gray-600 text-gray-600">Utilisateurs</p>
+            <h3 class="mt-2 text-3xl font-bold text-gray-900 text-gray-900">1</h3>
+        </div>
+    </div>
+
+    <!-- Tableau Stations -->
+    {% if stations %}
+    <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-6 py-5border-gray-800">
+            <h3 class="text-lg font-semibold text-gray-900 text-gray-900">
+                <i class="fas fa-map-marker-alt mr-2 text-brand-600"></i>Stations ({{ stations|length }})
+            </h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50bg-gray-800">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 text-gray-600">Nom</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 text-gray-600">Adresse</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 text-gray-600">Type</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200divide-gray-800">
+                    {% for station in stations %}
+                    <tr class="hover:bg-gray-50hover:bg-gray-800">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900 text-gray-900">{{ station.nom|default:"N/A" }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600 text-gray-600">{{ station.adresse|default:"-" }}</td>
+                        <td class="px-6 py-4">
+                            <span class="rounded-full bg-brand-100 px-3 py-1 text-xs font-medium text-brand-800 text-brand-600">{{ station.type|default:"Station" }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    {% endif %}
+
+    
+</div>
+{% endblock %}
+
