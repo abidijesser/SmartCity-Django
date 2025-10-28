@@ -107,138 +107,390 @@
 
     <!-- Action Cards selon le rôle -->
     {% if profile.is_conducteur %}
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <!-- Mes Trajets -->
-        <a href="{% url 'accounts:trajets_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-brand-300 hover:shadow-lg block">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-brand-100">
-                <i class="fas fa-route text-brand-600 text-2xl text-brand-600"></i>
+    
+    <!-- Section Principale - Actions Prioritaires -->
+    <div>
+        <h2 class="mb-4 text-xl font-bold text-gray-900">
+            <i class="fas fa-star mr-2 text-yellow-500"></i>Actions Principales
+        </h2>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <!-- Mes Trajets -->
+            <a href="{% url 'accounts:trajets_list' %}" class="group cursor-pointer rounded-2xl border-2 border-brand-200 bg-gradient-to-br from-brand-50 to-white p-6 transition hover:border-brand-400 hover:shadow-xl block">
+                <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-brand-600 shadow-lg">
+                    <i class="fas fa-route text-white text-3xl"></i>
+                </div>
+                <h3 class="mb-2 text-xl font-bold text-gray-900">Mes Trajets</h3>
+                <p class="text-sm text-gray-600">Créer, gérer et consulter vos trajets planifiés</p>
+                <div class="mt-4 flex items-center text-brand-600 font-semibold">
+                    <span>Gérer</span>
+                    <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                </div>
+            </a>
+
+            <!-- Mon Véhicule -->
+            <a href="{% url 'accounts:vehicules_list' %}" class="group cursor-pointer rounded-2xl border-2 border-green-200 bg-gradient-to-br from-green-50 to-white p-6 transition hover:border-green-400 hover:shadow-xl block">
+                <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-green-600 shadow-lg">
+                    <i class="fas fa-car-side text-white text-3xl"></i>
+                </div>
+                <h3 class="mb-2 text-xl font-bold text-gray-900">Mon Véhicule</h3>
+                <p class="text-sm text-gray-600">Informations et gestion de votre véhicule</p>
+                <div class="mt-4 flex items-center text-green-600 font-semibold">
+                    <span>Consulter</span>
+                    <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                </div>
+            </a>
+
+            <!-- Horaires -->
+            <a href="{% url 'accounts:horaires_list' %}" class="group cursor-pointer rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white p-6 transition hover:border-blue-400 hover:shadow-xl block">
+                <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-blue-600 shadow-lg">
+                    <i class="fas fa-clock text-white text-3xl"></i>
+                </div>
+                <h3 class="mb-2 text-xl font-bold text-gray-900">Horaires</h3>
+                <p class="text-sm text-gray-600">Consulter et gérer les horaires de transport</p>
+                <div class="mt-4 flex items-center text-blue-600 font-semibold">
+                    <span>Voir les horaires</span>
+                    <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Section Secondaire - Autres Services -->
+    <div>
+        <h2 class="mb-4 text-xl font-bold text-gray-900">
+            <i class="fas fa-th mr-2 text-gray-500"></i>Autres Services
+        </h2>
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
+            <!-- Parkings -->
+            <a href="{% url 'accounts:parkings_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-purple-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
+                    <i class="fas fa-parking text-purple-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Parkings</h3>
+                <p class="text-xs text-gray-500">Disponibilités</p>
+            </a>
+
+            <!-- Routes -->
+            <a href="{% url 'accounts:routes_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100">
+                    <i class="fas fa-road text-indigo-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Routes</h3>
+                <p class="text-xs text-gray-500">Réseau routier</p>
+            </a>
+
+            <!-- Événements -->
+            <a href="{% url 'accounts:evenements_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-orange-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100">
+                    <i class="fas fa-exclamation-triangle text-orange-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Événements</h3>
+                <p class="text-xs text-gray-500">Trafic actuel</p>
+            </a>
+
+            <!-- Capteurs -->
+            <a href="{% url 'accounts:capteurs_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-cyan-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-100">
+                    <i class="fas fa-microchip text-cyan-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Capteurs</h3>
+                <p class="text-xs text-gray-500">Monitoring</p>
+            </a>
+
+            <!-- Villes -->
+            <a href="{% url 'accounts:villes_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-teal-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-teal-100">
+                    <i class="fas fa-city text-teal-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Villes</h3>
+                <p class="text-xs text-gray-500">Zones urbaines</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats rapides pour le conducteur -->
+    {% if fuseki_available and vehicles %}
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div class="rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 to-white p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Véhicules Disponibles</p>
+                    <h3 class="mt-1 text-3xl font-bold text-gray-900">{{ vehicles|length }}</h3>
+                </div>
+                <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100">
+                    <i class="fas fa-car text-blue-600 text-2xl"></i>
+                </div>
             </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Mes Trajets</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Gérer et consulter vos trajets planifiés</p>
-        </a>
         </div>
 
-        <!-- Mon Véhicule -->
-        <a href="{% url 'accounts:vehicules_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-green-300 hover:shadow-lg block">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-green-100">
-                <i class="fas fa-car-side text-green-600 text-2xl text-green-600"></i>
+        <div class="rounded-xl border border-gray-200 bg-gradient-to-br from-green-50 to-white p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Trajets Actifs</p>
+                    <h3 class="mt-1 text-3xl font-bold text-gray-900">0</h3>
+                </div>
+                <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-green-100">
+                    <i class="fas fa-route text-green-600 text-2xl"></i>
+                </div>
             </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Mon Véhicule</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Informations et gestion du véhicule</p>
-        </a>
+        </div>
 
-        <!-- Horaires -->
-        <a href="{% url 'accounts:horaires_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-blue-300 hover:shadow-lg block">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100">
-                <i class="fas fa-clock text-blue-600 text-2xl text-blue-600"></i>
+        <div class="rounded-xl border border-gray-200 bg-gradient-to-br from-purple-50 to-white p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Heures de Service</p>
+                    <h3 class="mt-1 text-3xl font-bold text-gray-900">--</h3>
+                </div>
+                <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-purple-100">
+                    <i class="fas fa-clock text-purple-600 text-2xl"></i>
+                </div>
             </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Horaires</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Consulter les horaires de transport</p>
-        </a>
-
-        <!-- Parkings -->
-        <a href="{% url 'accounts:parkings_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-purple-300 hover:shadow-lg block">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-purple-100">
-                <i class="fas fa-parking text-purple-600 text-2xl text-purple-600"></i>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Parkings</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Gérer les parkings disponibles</p>
-        </a>
-
-        <!-- Événements -->
-        <a href="{% url 'accounts:evenements_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-orange-300 hover:shadow-lg block">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-orange-100">
-                <i class="fas fa-exclamation-triangle text-orange-600 text-2xl text-orange-600"></i>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Événements</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Événements de trafic en cours</p>
-        </a>
-
-        <!-- Capteurs -->
-        <a href="{% url 'accounts:capteurs_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-purple-300 hover:shadow-lg block">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-purple-100">
-                <i class="fas fa-microchip text-purple-600 text-2xl text-purple-600"></i>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Capteurs</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Capteurs de stationnement et trafic</p>
-        </a>
-
-        <!-- Routes -->
-        <a href="{% url 'accounts:routes_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-indigo-300 hover:shadow-lg block">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-100">
-                <i class="fas fa-road text-indigo-600 text-2xl text-indigo-600"></i>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Routes</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Autoroutes, routes rurales et urbaines</p>
-        </a>
-
-        <!-- Villes -->
-        <a href="{% url 'accounts:villes_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-teal-300 hover:shadow-lg block">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-teal-100">
-                <i class="fas fa-city text-teal-600 text-2xl text-teal-600"></i>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Villes</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Zones industrielles et résidentielles</p>
-        </a>
+        </div>
     </div>
+    {% endif %}
 
     {% elif profile.is_passager %}
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <!-- Rechercher Trajet -->
-        <div class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-brand-300 hover:shadow-lg">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-brand-100">
-                <i class="fas fa-search-location text-brand-600 text-2xl text-brand-600"></i>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Rechercher un Trajet</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Trouver le meilleur trajet pour vous</p>
-        </div>
+    
+    <!-- Section Principale - Actions Prioritaires -->
+    <div>
+        <h2 class="mb-4 text-xl font-bold text-gray-900">
+            <i class="fas fa-star mr-2 text-yellow-500"></i>Actions Principales
+        </h2>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <!-- Rechercher Trajet -->
+            <a href="#" class="group cursor-pointer rounded-2xl border-2 border-brand-200 bg-gradient-to-br from-brand-50 to-white p-6 transition hover:border-brand-400 hover:shadow-xl block">
+                <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-brand-600 shadow-lg">
+                    <i class="fas fa-search-location text-white text-3xl"></i>
+                </div>
+                <h3 class="mb-2 text-xl font-bold text-gray-900">Rechercher un Trajet</h3>
+                <p class="text-sm text-gray-600">Trouver le meilleur trajet pour votre destination</p>
+                <div class="mt-4 flex items-center text-brand-600 font-semibold">
+                    <span>Rechercher</span>
+                    <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                </div>
+            </a>
 
-        <!-- Mes Trajets -->
-        <div class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-green-300 hover:shadow-lg">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-green-100">
-                <i class="fas fa-map-marked-alt text-green-600 text-2xl text-green-600"></i>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Mes Trajets test</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Trajets favoris et récents</p>
-        </div>
+            <!-- Stations Disponibles -->
+            <a href="#" class="group cursor-pointer rounded-2xl border-2 border-green-200 bg-gradient-to-br from-green-50 to-white p-6 transition hover:border-green-400 hover:shadow-xl block">
+                <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-green-600 shadow-lg">
+                    <i class="fas fa-map-marker-alt text-white text-3xl"></i>
+                </div>
+                <h3 class="mb-2 text-xl font-bold text-gray-900">Stations</h3>
+                <p class="text-sm text-gray-600">Consulter toutes les stations de transport</p>
+                <div class="mt-4 flex items-center text-green-600 font-semibold">
+                    <span>Voir les stations</span>
+                    <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                </div>
+            </a>
 
-        <!-- Carte Interactive -->
-        <div class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-blue-300 hover:shadow-lg">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100">
-                <i class="fas fa-map text-blue-600 text-2xl text-blue-600"></i>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Carte Interactive</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Voir les stations et bus en temps réel</p>
+            <!-- Carte Interactive -->
+            <a href="#" class="group cursor-pointer rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white p-6 transition hover:border-blue-400 hover:shadow-xl block">
+                <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-blue-600 shadow-lg">
+                    <i class="fas fa-map text-white text-3xl"></i>
+                </div>
+                <h3 class="mb-2 text-xl font-bold text-gray-900">Carte Interactive</h3>
+                <p class="text-sm text-gray-600">Voir les stations et bus en temps réel</p>
+                <div class="mt-4 flex items-center text-blue-600 font-semibold">
+                    <span>Ouvrir la carte</span>
+                    <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                </div>
+            </a>
         </div>
     </div>
 
+    <!-- Section Secondaire - Autres Services -->
+    <div>
+        <h2 class="mb-4 text-xl font-bold text-gray-900">
+            <i class="fas fa-th mr-2 text-gray-500"></i>Informations Utiles
+        </h2>
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <!-- Horaires -->
+            <a href="{% url 'accounts:horaires_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-purple-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
+                    <i class="fas fa-clock text-purple-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Horaires</h3>
+                <p class="text-xs text-gray-500">Consultez les horaires</p>
+            </a>
+
+            <!-- Parkings -->
+            <a href="{% url 'accounts:parkings_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100">
+                    <i class="fas fa-parking text-indigo-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Parkings</h3>
+                <p class="text-xs text-gray-500">Disponibilités</p>
+            </a>
+
+            <!-- Événements -->
+            <a href="{% url 'accounts:evenements_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-orange-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100">
+                    <i class="fas fa-exclamation-triangle text-orange-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Alertes Trafic</h3>
+                <p class="text-xs text-gray-500">Incidents en cours</p>
+            </a>
+
+            <!-- Villes -->
+            <a href="{% url 'accounts:villes_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-teal-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-teal-100">
+                    <i class="fas fa-city text-teal-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Villes</h3>
+                <p class="text-xs text-gray-500">Zones desservies</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats rapides pour le passager -->
+    {% if fuseki_available %}
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div class="rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 to-white p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Stations Disponibles</p>
+                    <h3 class="mt-1 text-3xl font-bold text-gray-900">{% if stations %}{{ stations|length }}{% else %}0{% endif %}</h3>
+                </div>
+                <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100">
+                    <i class="fas fa-map-marker-alt text-blue-600 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-gray-200 bg-gradient-to-br from-green-50 to-white p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Trajets Disponibles</p>
+                    <h3 class="mt-1 text-3xl font-bold text-gray-900">{% if trips %}{{ trips|length }}{% else %}0{% endif %}</h3>
+                </div>
+                <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-green-100">
+                    <i class="fas fa-route text-green-600 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-gray-200 bg-gradient-to-br from-purple-50 to-white p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Mes Favoris</p>
+                    <h3 class="mt-1 text-3xl font-bold text-gray-900">0</h3>
+                </div>
+                <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-purple-100">
+                    <i class="fas fa-heart text-purple-600 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {% elif profile.is_gestionnaire %}
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <!-- Gérer les Stations -->
-        <a href="{% url 'accounts:stations_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-brand-300 hover:shadow-lg block">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-brand-100">
-                <i class="fas fa-map-marker-alt text-brand-600 text-2xl text-brand-600"></i>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Gérer les Stations</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Ajouter, modifier et supprimer des stations</p>
-        </a>
+    
+    <!-- Section Principale - Actions Prioritaires -->
+    <div>
+        <h2 class="mb-4 text-xl font-bold text-gray-900">
+            <i class="fas fa-star mr-2 text-yellow-500"></i>Gestion Principale
+        </h2>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <!-- Gérer les Stations -->
+            <a href="{% url 'accounts:stations_list' %}" class="group cursor-pointer rounded-2xl border-2 border-brand-200 bg-gradient-to-br from-brand-50 to-white p-6 transition hover:border-brand-400 hover:shadow-xl block">
+                <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-brand-600 shadow-lg">
+                    <i class="fas fa-map-marker-alt text-white text-3xl"></i>
+                </div>
+                <h3 class="mb-2 text-xl font-bold text-gray-900">Gérer les Stations</h3>
+                <p class="text-sm text-gray-600">Ajouter, modifier et supprimer des stations</p>
+                <div class="mt-4 flex items-center text-brand-600 font-semibold">
+                    <span>Gérer</span>
+                    <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                </div>
+            </a>
 
-        <!-- Gérer les Véhicules -->
-        <a href="{% url 'accounts:vehicules_list' %}" class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-green-300 hover:shadow-lg block">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-green-100">
-                <i class="fas fa-bus text-green-600 text-2xl text-green-600"></i>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Gérer les Véhicules</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Gérer la flotte de transport</p>
-        </a>
+            <!-- Gérer les Véhicules -->
+            <a href="{% url 'accounts:vehicules_list' %}" class="group cursor-pointer rounded-2xl border-2 border-green-200 bg-gradient-to-br from-green-50 to-white p-6 transition hover:border-green-400 hover:shadow-xl block">
+                <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-green-600 shadow-lg">
+                    <i class="fas fa-bus text-white text-3xl"></i>
+                </div>
+                <h3 class="mb-2 text-xl font-bold text-gray-900">Gérer les Véhicules</h3>
+                <p class="text-sm text-gray-600">Gérer la flotte de transport complète</p>
+                <div class="mt-4 flex items-center text-green-600 font-semibold">
+                    <span>Gérer</span>
+                    <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                </div>
+            </a>
 
-        <!-- Statistiques -->
-        <div class="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-blue-300 hover:shadow-lg">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100">
-                <i class="fas fa-chart-line text-blue-600 text-2xl text-blue-600"></i>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 text-gray-900">Statistiques</h3>
-            <p class="text-sm text-gray-600 text-gray-600">Voir les statistiques du système</p>
+            <!-- Trajets -->
+            <a href="{% url 'accounts:trajets_list' %}" class="group cursor-pointer rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white p-6 transition hover:border-blue-400 hover:shadow-xl block">
+                <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-blue-600 shadow-lg">
+                    <i class="fas fa-route text-white text-3xl"></i>
+                </div>
+                <h3 class="mb-2 text-xl font-bold text-gray-900">Gérer les Trajets</h3>
+                <p class="text-sm text-gray-600">Consulter et gérer tous les trajets</p>
+                <div class="mt-4 flex items-center text-blue-600 font-semibold">
+                    <span>Consulter</span>
+                    <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Section Secondaire - Autres Services -->
+    <div>
+        <h2 class="mb-4 text-xl font-bold text-gray-900">
+            <i class="fas fa-th mr-2 text-gray-500"></i>Autres Outils de Gestion
+        </h2>
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
+            <!-- Horaires -->
+            <a href="{% url 'accounts:horaires_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-purple-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
+                    <i class="fas fa-clock text-purple-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Horaires</h3>
+                <p class="text-xs text-gray-500">Planification</p>
+            </a>
+
+            <!-- Parkings -->
+            <a href="{% url 'accounts:parkings_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100">
+                    <i class="fas fa-parking text-indigo-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Parkings</h3>
+                <p class="text-xs text-gray-500">Gestion places</p>
+            </a>
+
+            <!-- Routes -->
+            <a href="{% url 'accounts:routes_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-cyan-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-100">
+                    <i class="fas fa-road text-cyan-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Routes</h3>
+                <p class="text-xs text-gray-500">Infrastructure</p>
+            </a>
+
+            <!-- Événements -->
+            <a href="{% url 'accounts:evenements_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-orange-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100">
+                    <i class="fas fa-exclamation-triangle text-orange-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Événements</h3>
+                <p class="text-xs text-gray-500">Incidents</p>
+            </a>
+
+            <!-- Capteurs -->
+            <a href="{% url 'accounts:capteurs_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-pink-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-pink-100">
+                    <i class="fas fa-microchip text-pink-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Capteurs</h3>
+                <p class="text-xs text-gray-500">IoT Monitoring</p>
+            </a>
+
+            <!-- Villes -->
+            <a href="{% url 'accounts:villes_list' %}" class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition hover:border-teal-300 hover:shadow-md block">
+                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-teal-100">
+                    <i class="fas fa-city text-teal-600 text-xl"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-semibold text-gray-900">Villes</h3>
+                <p class="text-xs text-gray-500">Zones gérées</p>
+            </a>
         </div>
     </div>
 
