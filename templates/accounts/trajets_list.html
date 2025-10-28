@@ -39,6 +39,19 @@
 
     <!-- Results Table -->
     <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="px-6 pt-6">
+            <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+                <input id="rec_depart" type="text" placeholder="Filtrer par départ" class="rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:ring-brand-500" />
+                <input id="rec_arrivee" type="text" placeholder="Filtrer par arrivée" class="rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:ring-brand-500" />
+                <select id="rec_order" class="rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:ring-brand-500">
+                    <option value="duree">Trier par durée</option>
+                    <option value="distance">Trier par distance</option>
+                    <option value="heureDepart">Trier par heure de départ</option>
+                </select>
+            </div>
+            <button id="rec_fetch" class="mb-4 inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">Afficher recommandations</button>
+            <div id="rec_results" class="hidden rounded-lg border border-gray-200 p-4"></div>
+        </div>
         <div class="border-b border-gray-200 px-6 py-5">
             <h5 class="text-lg font-semibold text-gray-900">
                 <i class="fas fa-list mr-2 text-brand-600"></i>Liste des Trajets ({{ trajets|length }})
@@ -98,7 +111,10 @@
                                 -
                             {% endif %}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm space-x-4">
+                            <a href="{% url 'accounts:trajet_edit' trajet.uri|urlencode %}" class="text-brand-600 hover:text-brand-700">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
                             <a href="{% url 'accounts:trajet_delete' trajet.uri|urlencode %}" class="text-red-600 hover:text-red-700">
                                 <i class="fas fa-trash"></i> Supprimer
                             </a>
@@ -119,4 +135,56 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  const btn = document.getElementById('rec_fetch');
+  const box = document.getElementById('rec_results');
+  const depart = document.getElementById('rec_depart');
+  const arrivee = document.getElementById('rec_arrivee');
+  const order = document.getElementById('rec_order');
+
+  async function fetchRecs() {
+    const url = new URL(window.location.origin + '/ai/trajets/recommend/');
+    if (depart.value.trim()) url.searchParams.set('depart', depart.value.trim());
+    if (arrivee.value.trim()) url.searchParams.set('arrivee', arrivee.value.trim());
+    if (order.value) url.searchParams.set('order_by', order.value);
+    try {
+      const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+      const data = await res.json();
+      const trajets = Array.isArray(data.trajets) ? data.trajets : [];
+      render(trajets);
+    } catch (e) {
+      render([]);
+    }
+  }
+
+  function render(items) {
+    box.classList.remove('hidden');
+    if (!items.length) {
+      box.innerHTML = '<div class="text-gray-600">Aucune recommandation.</div>';
+      return;
+    }
+    const html = items.map(t => {
+      const dep = t.departNom || '-';
+      const arr = t.arriveeNom || '-';
+      const veh = t.vehiculeNom || '-';
+      const hd = t.heureDepart ? String(t.heureDepart).slice(0,16) : '-';
+      const ha = t.heureArrivee ? String(t.heureArrivee).slice(0,16) : '-';
+      const d = t.dureeTrajet || '-';
+      const dist = t.distanceTrajet || '-';
+      return `<div class="mb-3 rounded-md border border-gray-200 p-3">`+
+             `<div class="font-semibold text-gray-900">${dep} → ${arr}</div>`+
+             `<div class="text-sm text-gray-600">Véhicule: ${veh} • Départ: ${hd} • Arrivée: ${ha}</div>`+
+             `<div class="text-sm text-gray-600">Durée: ${d} • Distance: ${dist}</div>`+
+             `</div>`;
+    }).join('');
+    box.innerHTML = html;
+  }
+
+  btn && btn.addEventListener('click', fetchRecs);
+})();
+</script>
 {% endblock %}

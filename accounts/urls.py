@@ -26,11 +26,13 @@ urlpatterns = [
     # Gestion CRUD des trajets (Conducteurs uniquement)
     path('trajets/', views.trajets_list_view, name='trajets_list'),
     path('trajets/create/', views.trajet_create_view, name='trajet_create'),
+    path('trajets/<path:trajet_uri>/edit/', views.trajet_detail_view, name='trajet_edit'),
     path('trajets/<path:trajet_uri>/delete/', views.trajet_delete_view, name='trajet_delete'),
     
     # Gestion CRUD des stations (Gestionnaires uniquement)
     path('stations/', views.stations_list_view, name='stations_list'),
     path('stations/create/', views.station_create_view, name='station_create'),
+    path('stations/<path:station_uri>/edit/', views.station_detail_view, name='station_edit'),
     path('stations/<path:station_uri>/delete/', views.station_delete_view, name='station_delete'),
     # Gestion CRUD des horaires
     path('horaires/', views.horaires_list_view, name='horaires_list'),
@@ -67,5 +69,12 @@ urlpatterns = [
     path('villes/create/', views.ville_create_view, name='ville_create'),
     path('villes/<path:ville_uri>/edit/', views.ville_detail_view, name='ville_edit'),
     path('villes/<path:ville_uri>/delete/', views.ville_delete_view, name='ville_delete'),
+
+    # Endpoints AI (JSON)
+    path('ai/stations/suggest/', views.ai_station_suggest_view, name='ai_station_suggest'),
+    path('ai/trajets/recommend/', views.ai_trajet_recommend_view, name='ai_trajet_recommend'),
+    # Compatibilité si l'utilisateur saisit un préfixe 'accounts/' dans l'URL
+    path('accounts/ai/stations/suggest/', views.ai_station_suggest_view),
+    path('accounts/ai/trajets/recommend/', views.ai_trajet_recommend_view),
 ]
 
