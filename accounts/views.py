@@ -500,6 +500,9 @@ def trajet_create_view(request):
             messages.error(request, 'Distance et durée doivent être des nombres.')
             return redirect('accounts:trajet_create')
         
+        # Créer l'URI du conducteur
+        conducteur_uri = f"{sparql.TRANSPORT_PREFIX}User_{request.user.username}"
+        
         # Créer le trajet
         success = sparql.addTrajet(
             depart_station_uri=depart_station_uri,
@@ -509,7 +512,8 @@ def trajet_create_view(request):
             heure_arrivee=heure_arrivee,
             distance=distance,
             duree=duree,
-            nom_trajet=nom_trajet
+            nom_trajet=nom_trajet,
+            conducteur_uri=conducteur_uri
         )
         
         if success:
@@ -1648,3 +1652,367 @@ def ville_delete_view(request, ville_uri):
         'ville': ville_data,
         'fuseki_available': FUSEKI_AVAILABLE
     })
+
+
+# ============================================
+# NOUVELLES VUES - PASSAGER
+# ============================================
+
+@login_required
+def search_trajets_view(request):
+    """Recherche avancée de trajets par ville, station, horaire (PASSAGER)"""
+    context = {
+        'fuseki_available': FUSEKI_AVAILABLE,
+        'trajets': [],
+        'villes': []
+    }
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            # Charger les villes pour le formulaire
+            context['villes'] = sparql.get_all_villes()
+            
+            if request.method == 'POST':
+                ville_depart = request.POST.get('ville_depart', '').strip()
+                ville_arrivee = request.POST.get('ville_arrivee', '').strip()
+                heure_min = request.POST.get('heure_min', '').strip()
+                
+                # Recherche avancée
+                trajets = sparql.search_trajets_disponibles(
+                    ville_depart=ville_depart if ville_depart else None,
+                    ville_arrivee=ville_arrivee if ville_arrivee else None,
+                    heure_min=heure_min if heure_min else None
+                )
+                
+                context['trajets'] = trajets
+                context['ville_depart'] = ville_depart
+                context['ville_arrivee'] = ville_arrivee
+                context['heure_min'] = heure_min
+                
+                if trajets:
+                    messages.success(request, f'{len(trajets)} trajet(s) trouvé(s)!')
+                else:
+                    messages.info(request, 'Aucun trajet trouvé pour ces critères.')
+        except Exception as e:
+            messages.error(request, f'Erreur lors de la recherche: {str(e)}')
+            context['error'] = str(e)
+    
+    return render(request, 'accounts/search_trajets.html', context)
+
+
+@login_required
+def mes_reservations_view(request):
+    """Afficher toutes mes réservations (PASSAGER)"""
+    context = {
+        'fuseki_available': FUSEKI_AVAILABLE,
+        'reservations': []
+    }
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            user_uri = f"{sparql.TRANSPORT_PREFIX}User_{request.user.username}"
+            reservations = sparql.get_reservations_by_user(user_uri)
+            context['reservations'] = reservations
+        except Exception as e:
+            messages.error(request, f'Erreur lors du chargement des réservations: {str(e)}')
+            context['error'] = str(e)
+    
+    return render(request, 'accounts/mes_reservations.html', context)
+
+
+@login_required
+def reserver_trajet_view(request, trajet_uri):
+    """Réserver un trajet (PASSAGER)"""
+    from urllib.parse import unquote
+    trajet_uri = unquote(trajet_uri)
+    
+    if request.method == 'POST':
+        nombre_places = int(request.POST.get('nombre_places', 1))
+        user_uri = f"{sparql.TRANSPORT_PREFIX}User_{request.user.username}"
+        
+        success = sparql.create_reservation(
+            user_uri=user_uri,
+            trajet_uri=trajet_uri,
+            nombre_places=nombre_places
+        )
+        
+        if success:
+            messages.success(request, f'Réservation effectuée avec succès! {nombre_places} place(s) réservée(s).')
+        else:
+            messages.error(request, 'Erreur lors de la réservation.')
+        
+        return redirect('accounts:mes_reservations')
+    
+    # GET: Afficher le formulaire de réservation
+    # Récupérer les infos du trajet
+    trajet_info = None
+    try:
+        trajets = sparql.get_all_trajets()
+        for t in trajets:
+            if t.get('trajet', '') == trajet_uri:
+                trajet_info = t
+                break
+    except Exception as e:
+        messages.error(request, f'Erreur: {str(e)}')
+    
+    return render(request, 'accounts/reserver_trajet.html', {
+        'trajet_uri': trajet_uri,
+        'trajet': trajet_info,
+        'fuseki_available': FUSEKI_AVAILABLE
+    })
+
+
+@login_required
+def annuler_reservation_view(request, reservation_uri):
+    """Annuler une réservation (PASSAGER)"""
+    from urllib.parse import unquote
+    reservation_uri = unquote(reservation_uri)
+    
+    if request.method == 'POST':
+        success = sparql.delete_reservation(reservation_uri)
+        
+        if success:
+            messages.success(request, 'Réservation annulée avec succès.')
+        else:
+            messages.error(request, 'Erreur lors de l\'annulation de la réservation.')
+    
+    return redirect('accounts:mes_reservations')
+
+
+@login_required
+def laisser_avis_view(request, trajet_uri):
+    """Laisser un avis sur un trajet (PASSAGER)"""
+    from urllib.parse import unquote
+    trajet_uri = unquote(trajet_uri)
+    
+    if request.method == 'POST':
+        note = int(request.POST.get('note', 5))
+        commentaire = request.POST.get('commentaire', '').strip()
+        user_uri = f"{sparql.TRANSPORT_PREFIX}User_{request.user.username}"
+        
+        # Récupérer le conducteur du trajet
+        conducteur_uri = None
+        try:
+            trajet_query = f"""
+SELECT ?conducteur
+WHERE {{
+    <{trajet_uri}> transport:conduitPar ?conducteur .
+}}
+"""
+            result = sparql.execute_query(trajet_query)
+            if result and len(result) > 0:
+                conducteur_uri = result[0].get('conducteur')
+        except:
+            pass
+        
+        success = sparql.create_avis(
+            user_uri=user_uri,
+            trajet_uri=trajet_uri,
+            conducteur_uri=conducteur_uri,
+            note=note,
+            commentaire=commentaire if commentaire else None
+        )
+        
+        if success:
+            messages.success(request, 'Merci pour votre avis!')
+        else:
+            messages.error(request, 'Erreur lors de l\'enregistrement de l\'avis.')
+        
+        return redirect('accounts:mes_reservations')
+    
+    # GET: Afficher le formulaire d'avis
+    # Récupérer les infos du trajet
+    trajet_info = None
+    try:
+        trajets = sparql.get_all_trajets()
+        for t in trajets:
+            if t.get('trajet', '') == trajet_uri:
+                trajet_info = t
+                break
+    except Exception as e:
+        messages.error(request, f'Erreur: {str(e)}')
+    
+    return render(request, 'accounts/laisser_avis.html', {
+        'trajet_uri': trajet_uri,
+        'trajet': trajet_info,
+        'fuseki_available': FUSEKI_AVAILABLE
+    })
+
+
+# ============================================
+# NOUVELLES VUES - CONDUCTEUR
+# ============================================
+
+@login_required
+def mes_statistiques_view(request):
+    """Afficher mes statistiques de conducteur (CONDUCTEUR)"""
+    if not request.user.profile.is_conducteur():
+        messages.error(request, 'Accès réservé aux conducteurs.')
+        return redirect('accounts:dashboard')
+    
+    context = {
+        'fuseki_available': FUSEKI_AVAILABLE,
+        'stats': {},
+        'trajets': [],
+        'avis': []
+    }
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            conducteur_uri = f"{sparql.TRANSPORT_PREFIX}User_{request.user.username}"
+            
+            # Récupérer les statistiques
+            stats = sparql.get_conducteur_statistics(conducteur_uri)
+            context['stats'] = stats
+            
+            # Récupérer l'historique des trajets
+            trajets = sparql.get_trajets_by_conducteur(conducteur_uri)
+            context['trajets'] = trajets
+            
+            # Récupérer les avis reçus
+            avis = sparql.get_avis_by_conducteur(conducteur_uri)
+            context['avis'] = avis
+            
+        except Exception as e:
+            messages.error(request, f'Erreur lors du chargement des statistiques: {str(e)}')
+            context['error'] = str(e)
+    
+    return render(request, 'accounts/mes_statistiques.html', context)
+
+
+@login_required
+def mes_avis_recus_view(request):
+    """Afficher les avis reçus (CONDUCTEUR)"""
+    if not request.user.profile.is_conducteur():
+        messages.error(request, 'Accès réservé aux conducteurs.')
+        return redirect('accounts:dashboard')
+    
+    context = {
+        'fuseki_available': FUSEKI_AVAILABLE,
+        'avis': []
+    }
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            conducteur_uri = f"{sparql.TRANSPORT_PREFIX}User_{request.user.username}"
+            avis = sparql.get_avis_by_conducteur(conducteur_uri)
+            context['avis'] = avis
+        except Exception as e:
+            messages.error(request, f'Erreur lors du chargement des avis: {str(e)}')
+            context['error'] = str(e)
+    
+    return render(request, 'accounts/mes_avis_recus.html', context)
+
+
+@login_required
+def mes_reservations_conducteur_view(request):
+    """Voir et gérer les réservations de mes trajets (CONDUCTEUR)"""
+    if not request.user.profile.is_conducteur():
+        messages.error(request, 'Accès réservé aux conducteurs.')
+        return redirect('accounts:dashboard')
+    
+    context = {
+        'fuseki_available': FUSEKI_AVAILABLE,
+        'reservations': []
+    }
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            conducteur_uri = f"{sparql.TRANSPORT_PREFIX}User_{request.user.username}"
+            
+            # Récupérer les réservations pour les trajets du conducteur
+            query = f"""
+SELECT ?reservation ?user ?trajet ?dateReservation ?nombrePlaces ?statut
+       ?departNom ?arriveeNom
+WHERE {{
+    ?reservation rdf:type transport:Réservation ;
+                 transport:concerne ?trajet .
+    ?trajet transport:conduitPar <{conducteur_uri}> .
+    
+    OPTIONAL {{ ?reservation transport:effectuePar ?user }}
+    OPTIONAL {{ ?reservation transport:dateReservation ?dateReservation }}
+    OPTIONAL {{ ?reservation transport:nombrePlaces ?nombrePlaces }}
+    OPTIONAL {{ ?reservation transport:statut ?statut }}
+    OPTIONAL {{ 
+        ?trajet transport:aPourDepart ?depart .
+        ?depart transport:nom ?departNom
+    }}
+    OPTIONAL {{ 
+        ?trajet transport:aPourArrivee ?arrivee .
+        ?arrivee transport:nom ?arriveeNom
+    }}
+}}
+ORDER BY DESC(?dateReservation)
+"""
+            reservations = sparql.execute_query(query)
+            context['reservations'] = reservations
+        except Exception as e:
+            messages.error(request, f'Erreur lors du chargement des réservations: {str(e)}')
+            context['error'] = str(e)
+    
+    return render(request, 'accounts/mes_reservations_conducteur.html', context)
+
+
+@login_required
+def confirmer_reservation_view(request, reservation_uri):
+    """Confirmer une réservation (CONDUCTEUR)"""
+    if not request.user.profile.is_conducteur():
+        messages.error(request, 'Accès réservé aux conducteurs.')
+        return redirect('accounts:dashboard')
+    
+    from urllib.parse import unquote
+    reservation_uri = unquote(reservation_uri)
+    
+    if request.method == 'POST':
+        statut = request.POST.get('statut', 'Confirmée')
+        success = sparql.update_reservation_status(
+            reservation_uri=reservation_uri,
+            statut=statut
+        )
+        
+        if success:
+            messages.success(request, f'Réservation {statut.lower()}!')
+        else:
+            messages.error(request, 'Erreur lors de la mise à jour de la réservation.')
+    
+    return redirect('accounts:mes_reservations_conducteur')
+
+
+# ============================================
+# NOUVELLES VUES - GESTIONNAIRE
+# ============================================
+
+@login_required
+def toutes_reservations_view(request):
+    """Voir toutes les réservations (GESTIONNAIRE)"""
+    if not request.user.profile.is_gestionnaire():
+        messages.error(request, 'Accès réservé aux gestionnaires.')
+        return redirect('accounts:dashboard')
+    
+    context = {
+        'fuseki_available': FUSEKI_AVAILABLE,
+        'reservations': [],
+        'count_en_attente': 0,
+        'count_confirmees': 0,
+        'count_annulees': 0
+    }
+    
+    if FUSEKI_AVAILABLE:
+        try:
+            reservations = sparql.get_all_reservations()
+            context['reservations'] = reservations
+            
+            # Compter les statuts
+            for r in reservations:
+                statut = r.get('statut', '')
+                if statut == 'En attente':
+                    context['count_en_attente'] += 1
+                elif statut == 'Confirmée':
+                    context['count_confirmees'] += 1
+                elif statut == 'Annulée':
+                    context['count_annulees'] += 1
+        except Exception as e:
+            messages.error(request, f'Erreur lors du chargement des réservations: {str(e)}')
+            context['error'] = str(e)
+    
+    return render(request, 'accounts/toutes_reservations.html', context)

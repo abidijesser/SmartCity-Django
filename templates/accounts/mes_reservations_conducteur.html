@@ -1,0 +1,138 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}Gérer les Réservations - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+    <!-- Header -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <h1 class="mb-2 text-3xl font-bold text-gray-900">
+            <i class="fas fa-clipboard-check mr-3 text-brand-600"></i>Gérer les Réservations
+        </h1>
+        <p class="text-gray-600">Confirmez ou annulez les réservations pour vos trajets</p>
+    </div>
+
+    <!-- Liste des réservations -->
+    {% if reservations %}
+    <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-6 py-5">
+            <h2 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-list mr-2 text-brand-600"></i>{{ reservations|length }} Réservation(s)
+            </h2>
+        </div>
+        <div class="divide-y divide-gray-200">
+            {% for reservation in reservations %}
+            <div class="p-6 transition hover:bg-gray-50">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <!-- Trajet -->
+                        <div class="mb-3 flex items-center space-x-4">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-map-marker-alt text-green-600"></i>
+                                <span class="font-semibold text-gray-900">{{ reservation.departNom|default:"N/A" }}</span>
+                            </div>
+                            <i class="fas fa-arrow-right text-gray-400"></i>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-map-marker-alt text-red-600"></i>
+                                <span class="font-semibold text-gray-900">{{ reservation.arriveeNom|default:"N/A" }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Détails réservation -->
+                        <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+                            {% if reservation.user %}
+                            <div class="text-sm">
+                                <span class="text-gray-500">Passager:</span>
+                                <span class="ml-1 font-medium text-gray-900">{{ reservation.user|slice:"-20:" }}</span>
+                            </div>
+                            {% endif %}
+                            {% if reservation.dateReservation %}
+                            <div class="text-sm">
+                                <span class="text-gray-500">Date:</span>
+                                <span class="ml-1 font-medium text-gray-900">{{ reservation.dateReservation|slice:":10" }}</span>
+                            </div>
+                            {% endif %}
+                            {% if reservation.nombrePlaces %}
+                            <div class="text-sm">
+                                <span class="text-gray-500">Places:</span>
+                                <span class="ml-1 font-medium text-gray-900">{{ reservation.nombrePlaces }}</span>
+                            </div>
+                            {% endif %}
+                            {% if reservation.statut %}
+                            <div class="text-sm">
+                                <span class="text-gray-500">Statut:</span>
+                                {% if reservation.statut == "Confirmée" %}
+                                <span class="ml-1 rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i>{{ reservation.statut }}
+                                </span>
+                                {% elif reservation.statut == "En attente" %}
+                                <span class="ml-1 rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
+                                    <i class="fas fa-clock mr-1"></i>{{ reservation.statut }}
+                                </span>
+                                {% elif reservation.statut == "Annulée" %}
+                                <span class="ml-1 rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
+                                    <i class="fas fa-times-circle mr-1"></i>{{ reservation.statut }}
+                                </span>
+                                {% else %}
+                                <span class="ml-1 font-medium text-gray-900">{{ reservation.statut }}</span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    {% if reservation.statut == "En attente" %}
+                    <div class="ml-4 flex flex-col space-y-2">
+                        <!-- Confirmer -->
+                        <form method="post" action="{% url 'accounts:confirmer_reservation' reservation.reservation %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="statut" value="Confirmée">
+                            <button type="submit" 
+                                    class="w-full rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700">
+                                <i class="fas fa-check mr-1"></i>Confirmer
+                            </button>
+                        </form>
+                        
+                        <!-- Refuser -->
+                        <form method="post" action="{% url 'accounts:confirmer_reservation' reservation.reservation %}"
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir refuser cette réservation ?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="statut" value="Annulée">
+                            <button type="submit" 
+                                    class="w-full rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700">
+                                <i class="fas fa-times mr-1"></i>Refuser
+                            </button>
+                        </form>
+                    </div>
+                    {% elif reservation.statut == "Confirmée" %}
+                    <div class="ml-4">
+                        <div class="rounded-lg bg-green-100 px-4 py-2 text-sm font-semibold text-green-800">
+                            <i class="fas fa-check-circle mr-1"></i>Confirmée
+                        </div>
+                    </div>
+                    {% elif reservation.statut == "Annulée" %}
+                    <div class="ml-4">
+                        <div class="rounded-lg bg-red-100 px-4 py-2 text-sm font-semibold text-red-800">
+                            <i class="fas fa-times-circle mr-1"></i>Refusée
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="rounded-2xl border border-gray-200 bg-white p-12 text-center">
+        <i class="fas fa-clipboard-list mb-4 text-6xl text-gray-300"></i>
+        <h3 class="mb-2 text-xl font-semibold text-gray-900">Aucune réservation</h3>
+        <p class="mb-6 text-gray-600">Vous n'avez pas encore de réservations pour vos trajets</p>
+        <a href="{% url 'accounts:trajets_list' %}" 
+           class="inline-flex items-center rounded-lg bg-brand-600 px-6 py-3 font-semibold text-white transition hover:bg-brand-700">
+            <i class="fas fa-route mr-2"></i>Voir mes trajets
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

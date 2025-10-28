@@ -271,7 +271,7 @@ WHERE {{
     def addTrajet(self, depart_station_uri: str, arrivee_station_uri: str, 
                   vehicule_uri: str = None, heure_depart: str = None, 
                   heure_arrivee: str = None, distance: float = None, 
-                  duree: float = None, nom_trajet: str = None) -> bool:
+                  duree: float = None, nom_trajet: str = None, conducteur_uri: str = None) -> bool:
         """
         Crée un nouveau trajet dans l'ontologie
         
@@ -284,6 +284,7 @@ WHERE {{
             distance: Distance du trajet en km (optionnel)
             duree: Durée du trajet en heures (optionnel)
             nom_trajet: Nom du trajet pour générer l'URI (optionnel)
+            conducteur_uri: URI du conducteur (optionnel)
             
         Returns:
             bool: True si succès, False sinon
@@ -321,6 +322,9 @@ INSERT DATA {{
         
         if duree is not None:
             insert_query += f'    <{trajet_uri}> transport:dureeTrajet "{duree}"^^xsd:float .\n'
+        
+        if conducteur_uri:
+            insert_query += f'    <{trajet_uri}> transport:conduitPar <{conducteur_uri}> .\n'
         
         insert_query += "}"
         
@@ -1063,6 +1067,288 @@ WHERE {{
 }}
 """
         return self.execute_update(update_query)
+    
+    # ===== MÉTHODES CRUD POUR LES RÉSERVATIONS (PASSAGERS) =====
+    
+    def create_reservation(self, user_uri: str, trajet_uri: str, date_reservation: str = None,
+                           nombre_places: int = 1, statut: str = "En attente") -> bool:
+        """Crée une nouvelle réservation pour un passager"""
+        import uuid
+        reservation_id = str(uuid.uuid4())[:8]
+        reservation_uri = f"{self.TRANSPORT_PREFIX}Reservation_{reservation_id}"
+        
+        from datetime import datetime
+        if not date_reservation:
+            date_reservation = datetime.now().isoformat()
+        
+        insert_query = f"""
+INSERT DATA {{
+    <{reservation_uri}> rdf:type transport:Réservation ;
+                        transport:effectuePar <{user_uri}> ;
+                        transport:concerne <{trajet_uri}> ;
+                        transport:dateReservation "{date_reservation}" ;
+                        transport:nombrePlaces "{nombre_places}"^^xsd:integer ;
+                        transport:statut "{statut}" .
+}}
+"""
+        return self.execute_update(insert_query)
+    
+    def get_reservations_by_user(self, user_uri: str) -> List[Dict]:
+        """Récupère toutes les réservations d'un utilisateur"""
+        query = f"""
+SELECT ?reservation ?trajet ?dateReservation ?nombrePlaces ?statut 
+       ?departStation ?departNom ?arriveeStation ?arriveeNom
+WHERE {{
+    ?reservation rdf:type transport:Réservation ;
+                 transport:effectuePar <{user_uri}> ;
+                 transport:concerne ?trajet .
+    OPTIONAL {{ ?reservation transport:dateReservation ?dateReservation }}
+    OPTIONAL {{ ?reservation transport:nombrePlaces ?nombrePlaces }}
+    OPTIONAL {{ ?reservation transport:statut ?statut }}
+    
+    OPTIONAL {{ 
+        ?trajet transport:aPourDepart ?departStation .
+        ?departStation transport:nom ?departNom
+    }}
+    OPTIONAL {{ 
+        ?trajet transport:aPourArrivee ?arriveeStation .
+        ?arriveeStation transport:nom ?arriveeNom
+    }}
+}}
+ORDER BY DESC(?dateReservation)
+"""
+        return self.execute_query(query)
+    
+    def get_all_reservations(self) -> List[Dict]:
+        """Récupère toutes les réservations (pour gestionnaire)"""
+        query = """
+SELECT ?reservation ?user ?trajet ?dateReservation ?nombrePlaces ?statut
+WHERE {
+    ?reservation rdf:type transport:Réservation .
+    OPTIONAL { ?reservation transport:effectuePar ?user }
+    OPTIONAL { ?reservation transport:concerne ?trajet }
+    OPTIONAL { ?reservation transport:dateReservation ?dateReservation }
+    OPTIONAL { ?reservation transport:nombrePlaces ?nombrePlaces }
+    OPTIONAL { ?reservation transport:statut ?statut }
+}
+ORDER BY DESC(?dateReservation)
+"""
+        return self.execute_query(query)
+    
+    def update_reservation_status(self, reservation_uri: str, statut: str) -> bool:
+        """Met à jour le statut d'une réservation"""
+        update_query = f"""
+DELETE {{
+    <{reservation_uri}> transport:statut ?oldStatut .
+}}
+INSERT {{
+    <{reservation_uri}> transport:statut "{statut}" .
+}}
+WHERE {{
+    <{reservation_uri}> rdf:type transport:Réservation .
+    OPTIONAL {{ <{reservation_uri}> transport:statut ?oldStatut }}
+}}
+"""
+        return self.execute_update(update_query)
+    
+    def delete_reservation(self, reservation_uri: str) -> bool:
+        """Supprime une réservation"""
+        delete_query = f"""
+DELETE WHERE {{
+    <{reservation_uri}> ?p ?o .
+}}
+"""
+        return self.execute_update(delete_query)
+    
+    # ===== MÉTHODES CRUD POUR LES AVIS (PASSAGERS) =====
+    
+    def create_avis(self, user_uri: str, trajet_uri: str = None, conducteur_uri: str = None,
+                    note: int = 5, commentaire: str = None, date_avis: str = None) -> bool:
+        """Crée un nouvel avis sur un trajet ou conducteur"""
+        import uuid
+        avis_id = str(uuid.uuid4())[:8]
+        avis_uri = f"{self.TRANSPORT_PREFIX}Avis_{avis_id}"
+        
+        from datetime import datetime
+        if not date_avis:
+            date_avis = datetime.now().isoformat()
+        
+        insert_query = f"""
+INSERT DATA {{
+    <{avis_uri}> rdf:type transport:Avis ;
+                 transport:donnePar <{user_uri}> ;
+                 transport:note "{note}"^^xsd:integer ;
+                 transport:dateAvis "{date_avis}" .
+"""
+        if trajet_uri:
+            insert_query += f'    <{avis_uri}> transport:concerneTrajet <{trajet_uri}> .\n'
+        if conducteur_uri:
+            insert_query += f'    <{avis_uri}> transport:concerneConducteur <{conducteur_uri}> .\n'
+        if commentaire:
+            insert_query += f'    <{avis_uri}> transport:commentaire "{commentaire}" .\n'
+        
+        insert_query += "}"
+        return self.execute_update(insert_query)
+    
+    def get_avis_by_trajet(self, trajet_uri: str) -> List[Dict]:
+        """Récupère tous les avis pour un trajet"""
+        query = f"""
+SELECT ?avis ?user ?note ?commentaire ?dateAvis
+WHERE {{
+    ?avis rdf:type transport:Avis ;
+          transport:concerneTrajet <{trajet_uri}> .
+    OPTIONAL {{ ?avis transport:donnePar ?user }}
+    OPTIONAL {{ ?avis transport:note ?note }}
+    OPTIONAL {{ ?avis transport:commentaire ?commentaire }}
+    OPTIONAL {{ ?avis transport:dateAvis ?dateAvis }}
+}}
+ORDER BY DESC(?dateAvis)
+"""
+        return self.execute_query(query)
+    
+    def get_avis_by_conducteur(self, conducteur_uri: str) -> List[Dict]:
+        """Récupère tous les avis pour un conducteur"""
+        query = f"""
+SELECT ?avis ?user ?note ?commentaire ?dateAvis ?trajet
+WHERE {{
+    ?avis rdf:type transport:Avis ;
+          transport:concerneConducteur <{conducteur_uri}> .
+    OPTIONAL {{ ?avis transport:donnePar ?user }}
+    OPTIONAL {{ ?avis transport:note ?note }}
+    OPTIONAL {{ ?avis transport:commentaire ?commentaire }}
+    OPTIONAL {{ ?avis transport:dateAvis ?dateAvis }}
+    OPTIONAL {{ ?avis transport:concerneTrajet ?trajet }}
+}}
+ORDER BY DESC(?dateAvis)
+"""
+        return self.execute_query(query)
+    
+    def delete_avis(self, avis_uri: str) -> bool:
+        """Supprime un avis"""
+        delete_query = f"""
+DELETE WHERE {{
+    <{avis_uri}> ?p ?o .
+}}
+"""
+        return self.execute_update(delete_query)
+    
+    # ===== MÉTHODES POUR STATISTIQUES (CONDUCTEUR) =====
+    
+    def get_conducteur_statistics(self, conducteur_uri: str) -> Dict:
+        """Récupère les statistiques d'un conducteur"""
+        query = f"""
+SELECT 
+    (COUNT(DISTINCT ?trajet) AS ?nombreTrajets)
+    (SUM(?distance) AS ?distanceTotale)
+    (AVG(?duree) AS ?dureeMoyenne)
+    (AVG(?note) AS ?noteMoyenne)
+WHERE {{
+    ?trajet rdf:type transport:Trajet ;
+            transport:conduitPar <{conducteur_uri}> .
+    
+    OPTIONAL {{ ?trajet transport:distanceTrajet ?distance }}
+    OPTIONAL {{ ?trajet transport:dureeTrajet ?duree }}
+    OPTIONAL {{ 
+        ?avis transport:concerneTrajet ?trajet ;
+              transport:note ?note 
+    }}
+}}
+"""
+        results = self.execute_query(query)
+        if results:
+            return results[0]
+        return {
+            'nombreTrajets': '0',
+            'distanceTotale': '0',
+            'dureeMoyenne': '0',
+            'noteMoyenne': '0'
+        }
+    
+    def get_trajets_by_conducteur(self, conducteur_uri: str) -> List[Dict]:
+        """Récupère tous les trajets d'un conducteur"""
+        query = f"""
+SELECT ?trajet ?heureDepart ?heureArrivee ?dureeTrajet ?distanceTrajet 
+       ?departStation ?departNom ?arriveeStation ?arriveeNom 
+       ?vehicule ?vehiculeNom
+WHERE {{
+    ?trajet rdf:type transport:Trajet ;
+            transport:conduitPar <{conducteur_uri}> .
+    
+    OPTIONAL {{ ?trajet transport:utiliseVehicule ?vehicule }}
+    OPTIONAL {{ 
+        ?trajet transport:aPourDepart ?departStation .
+        ?departStation transport:nom ?departNom
+    }}
+    OPTIONAL {{ 
+        ?trajet transport:aPourArrivee ?arriveeStation .
+        ?arriveeStation transport:nom ?arriveeNom
+    }}
+    OPTIONAL {{ ?vehicule transport:nom ?vehiculeNom }}
+    OPTIONAL {{ ?trajet transport:heureDepart ?heureDepart }}
+    OPTIONAL {{ ?trajet transport:heureArrivee ?heureArrivee }}
+    OPTIONAL {{ ?trajet transport:dureeTrajet ?dureeTrajet }}
+    OPTIONAL {{ ?trajet transport:distanceTrajet ?distanceTrajet }}
+}}
+ORDER BY DESC(?heureDepart)
+"""
+        return self.execute_query(query)
+    
+    # ===== MÉTHODES POUR RECHERCHE AVANCÉE (PASSAGER) =====
+    
+    def search_trajets_disponibles(self, ville_depart: str = None, ville_arrivee: str = None,
+                                   date: str = None, heure_min: str = None) -> List[Dict]:
+        """Recherche avancée de trajets disponibles pour passagers"""
+        query = """
+SELECT DISTINCT ?trajet ?heureDepart ?heureArrivee ?dureeTrajet ?distanceTrajet
+       ?departStation ?departNom ?departVille
+       ?arriveeStation ?arriveeNom ?arriveeVille
+       ?vehicule ?vehiculeNom ?capacite
+WHERE {
+    ?trajet rdf:type transport:Trajet .
+    
+    # Station de départ
+    OPTIONAL { 
+        ?trajet transport:aPourDepart ?departStation .
+        ?departStation transport:nom ?departNom .
+        OPTIONAL { 
+            ?departStation transport:situeDans ?villeDepObj .
+            ?villeDepObj transport:nom ?departVille 
+        }
+    }
+    
+    # Station d'arrivée
+    OPTIONAL { 
+        ?trajet transport:aPourArrivee ?arriveeStation .
+        ?arriveeStation transport:nom ?arriveeNom .
+        OPTIONAL { 
+            ?arriveeStation transport:situeDans ?villeArrObj .
+            ?villeArrObj transport:nom ?arriveeVille 
+        }
+    }
+    
+    # Véhicule
+    OPTIONAL {
+        ?trajet transport:utiliseVehicule ?vehicule .
+        ?vehicule transport:nom ?vehiculeNom .
+        OPTIONAL { ?vehicule transport:capacite ?capacite }
+    }
+    
+    # Horaires
+    OPTIONAL { ?trajet transport:heureDepart ?heureDepart }
+    OPTIONAL { ?trajet transport:heureArrivee ?heureArrivee }
+    OPTIONAL { ?trajet transport:dureeTrajet ?dureeTrajet }
+    OPTIONAL { ?trajet transport:distanceTrajet ?distanceTrajet }
+"""
+        
+        if ville_depart:
+            query += f'\n    FILTER (CONTAINS(LCASE(STR(?departVille)), LCASE("{ville_depart}")) || CONTAINS(LCASE(STR(?departNom)), LCASE("{ville_depart}")))'
+        if ville_arrivee:
+            query += f'\n    FILTER (CONTAINS(LCASE(STR(?arriveeVille)), LCASE("{ville_arrivee}")) || CONTAINS(LCASE(STR(?arriveeNom)), LCASE("{ville_arrivee}")))'
+        if heure_min:
+            query += f'\n    FILTER (?heureDepart >= "{heure_min}")'
+        
+        query += "\n}\nORDER BY ?heureDepart"
+        return self.execute_query(query)
 
 
 # Instance globale du client

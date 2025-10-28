@@ -1,0 +1,95 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}Laisser un Avis - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl space-y-6 p-6">
+    <!-- Header -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <h1 class="mb-2 text-3xl font-bold text-gray-900">
+            <i class="fas fa-star mr-3 text-yellow-500"></i>Laisser un Avis
+        </h1>
+        <p class="text-gray-600">Votre avis compte! Aidez les autres passagers</p>
+    </div>
+
+    <!-- Détails du trajet -->
+    {% if trajet %}
+    <div class="rounded-2xl border border-gray-200 bg-white p-6">
+        <h2 class="mb-4 text-xl font-semibold text-gray-900">
+            <i class="fas fa-route mr-2 text-brand-600"></i>Trajet Effectué
+        </h2>
+        
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-map-marker-alt text-green-600"></i>
+                <span class="font-semibold text-gray-900">{{ trajet.departNom|default:"N/A" }}</span>
+            </div>
+            <i class="fas fa-arrow-right text-gray-400"></i>
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-map-marker-alt text-red-600"></i>
+                <span class="font-semibold text-gray-900">{{ trajet.arriveeNom|default:"N/A" }}</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Formulaire d'avis -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-6">
+        <h2 class="mb-4 text-xl font-semibold text-gray-900">
+            <i class="fas fa-comment-dots mr-2 text-brand-600"></i>Votre Évaluation
+        </h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Note -->
+            <div class="mb-6">
+                <label class="mb-2 block text-sm font-medium text-gray-700">
+                    Note (1 à 5 étoiles)
+                </label>
+                <div class="flex space-x-2">
+                    {% for i in "12345" %}
+                    <label class="cursor-pointer">
+                        <input type="radio" 
+                               name="note" 
+                               value="{{ i }}" 
+                               {% if i == "5" %}checked{% endif %}
+                               class="hidden peer">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-gray-300 transition peer-checked:border-yellow-500 peer-checked:bg-yellow-50">
+                            <i class="fas fa-star text-2xl text-gray-300 peer-checked:text-yellow-500"></i>
+                        </div>
+                        <div class="mt-1 text-center text-xs text-gray-600">{{ i }}</div>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Commentaire -->
+            <div class="mb-6">
+                <label for="commentaire" class="mb-2 block text-sm font-medium text-gray-700">
+                    Commentaire (optionnel)
+                </label>
+                <textarea id="commentaire" 
+                          name="commentaire" 
+                          rows="4"
+                          placeholder="Partagez votre expérience avec ce trajet..."
+                          class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200"></textarea>
+                <p class="mt-1 text-xs text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>Soyez respectueux et constructif
+                </p>
+            </div>
+
+            <div class="flex space-x-4">
+                <button type="submit" 
+                        class="flex-1 rounded-lg bg-yellow-500 px-6 py-3 font-semibold text-white transition hover:bg-yellow-600">
+                    <i class="fas fa-paper-plane mr-2"></i>Envoyer l'Avis
+                </button>
+                <a href="{% url 'accounts:mes_reservations' %}" 
+                   class="flex-1 rounded-lg border border-gray-300 bg-white px-6 py-3 text-center font-semibold text-gray-700 transition hover:bg-gray-50">
+                    <i class="fas fa-arrow-left mr-2"></i>Retour
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

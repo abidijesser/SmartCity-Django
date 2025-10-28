@@ -67,5 +67,34 @@ urlpatterns = [
     path('villes/create/', views.ville_create_view, name='ville_create'),
     path('villes/<path:ville_uri>/edit/', views.ville_detail_view, name='ville_edit'),
     path('villes/<path:ville_uri>/delete/', views.ville_delete_view, name='ville_delete'),
+    
+    # === NOUVELLES URLs PASSAGER ===
+    # Recherche avancée de trajets
+    path('search-trajets/', views.search_trajets_view, name='search_trajets'),
+    
+    # Réservations
+    path('reservations/', views.mes_reservations_view, name='mes_reservations'),
+    path('reserver/<path:trajet_uri>/', views.reserver_trajet_view, name='reserver_trajet'),
+    path('annuler-reservation/<path:reservation_uri>/', views.annuler_reservation_view, name='annuler_reservation'),
+    
+    # Avis (passager donne un avis)
+    path('laisser-avis/<path:trajet_uri>/', views.laisser_avis_view, name='laisser_avis'),
+    
+    # === NOUVELLES URLs CONDUCTEUR ===
+    # Statistiques conducteur
+    path('mes-statistiques/', views.mes_statistiques_view, name='mes_statistiques'),
+    
+    # Avis reçus par le conducteur
+    path('mes-avis-recus/', views.mes_avis_recus_view, name='mes_avis_recus'),
+    
+    # Réservations du conducteur
+    path('mes-reservations-conducteur/', views.mes_reservations_conducteur_view, name='mes_reservations_conducteur'),
+    
+    # Confirmer une réservation
+    path('confirmer-reservation/<path:reservation_uri>/', views.confirmer_reservation_view, name='confirmer_reservation'),
+    
+    # === NOUVELLES URLs GESTIONNAIRE ===
+    # Toutes les réservations (supervision)
+    path('toutes-reservations/', views.toutes_reservations_view, name='toutes_reservations'),
 ]
 

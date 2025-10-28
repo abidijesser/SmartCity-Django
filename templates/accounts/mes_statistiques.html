@@ -1,0 +1,165 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}Mes Statistiques - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+    <!-- Header -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <h1 class="mb-2 text-3xl font-bold text-gray-900">
+            <i class="fas fa-chart-line mr-3 text-brand-600"></i>Mes Statistiques
+        </h1>
+        <p class="text-gray-600">Suivez vos performances en tant que conducteur</p>
+    </div>
+
+    <!-- Stats Cards -->
+    {% if stats %}
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <!-- Nombre de trajets -->
+        <div class="rounded-2xl border border-gray-200 bg-gradient-to-br from-blue-50 to-white p-6">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100">
+                <i class="fas fa-route text-2xl text-blue-600"></i>
+            </div>
+            <p class="text-sm text-gray-600">Nombre de Trajets</p>
+            <h3 class="mt-2 text-4xl font-bold text-gray-900">{{ stats.nombreTrajets|default:"0" }}</h3>
+        </div>
+
+        <!-- Distance totale -->
+        <div class="rounded-2xl border border-gray-200 bg-gradient-to-br from-green-50 to-white p-6">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-green-100">
+                <i class="fas fa-road text-2xl text-green-600"></i>
+            </div>
+            <p class="text-sm text-gray-600">Distance Totale</p>
+            <h3 class="mt-2 text-4xl font-bold text-gray-900">
+                {% if stats.distanceTotale and stats.distanceTotale != "0" %}
+                    {{ stats.distanceTotale|floatformat:1 }}<span class="text-xl text-gray-600"> km</span>
+                {% else %}
+                    0<span class="text-xl text-gray-600"> km</span>
+                {% endif %}
+            </h3>
+        </div>
+
+        <!-- Durée moyenne -->
+        <div class="rounded-2xl border border-gray-200 bg-gradient-to-br from-purple-50 to-white p-6">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-purple-100">
+                <i class="fas fa-clock text-2xl text-purple-600"></i>
+            </div>
+            <p class="text-sm text-gray-600">Durée Moyenne</p>
+            <h3 class="mt-2 text-4xl font-bold text-gray-900">
+                {% if stats.dureeMoyenne and stats.dureeMoyenne != "0" %}
+                    {{ stats.dureeMoyenne|floatformat:0 }}<span class="text-xl text-gray-600"> h</span>
+                {% else %}
+                    --
+                {% endif %}
+            </h3>
+        </div>
+
+        <!-- Note moyenne -->
+        <div class="rounded-2xl border border-gray-200 bg-gradient-to-br from-yellow-50 to-white p-6">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-yellow-100">
+                <i class="fas fa-star text-2xl text-yellow-600"></i>
+            </div>
+            <p class="text-sm text-gray-600">Note Moyenne</p>
+            <h3 class="mt-2 text-4xl font-bold text-gray-900">
+                {% if stats.noteMoyenne and stats.noteMoyenne != "0" %}
+                    {{ stats.noteMoyenne|floatformat:1 }}<span class="text-xl text-yellow-500">/5 ★</span>
+                {% else %}
+                    --
+                {% endif %}
+            </h3>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Historique des trajets -->
+    {% if trajets %}
+    <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-6 py-5">
+            <h2 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-history mr-2 text-brand-600"></i>Historique de Mes Trajets
+            </h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Départ</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Arrivée</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Distance</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Durée</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for trajet in trajets %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm text-gray-900">{{ trajet.departNom|default:"N/A" }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">{{ trajet.arriveeNom|default:"N/A" }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ trajet.heureDepart|default:"-"|slice:":10" }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            {% if trajet.distanceTrajet %}{{ trajet.distanceTrajet }} km{% else %}-{% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            {% if trajet.dureeTrajet %}{{ trajet.dureeTrajet }} h{% else %}-{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Avis reçus -->
+    {% if avis %}
+    <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-6 py-5">
+            <h2 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-comments mr-2 text-yellow-500"></i>Avis Reçus ({{ avis|length }})
+            </h2>
+        </div>
+        <div class="divide-y divide-gray-200">
+            {% for av in avis|slice:":5" %}
+            <div class="p-6">
+                <div class="mb-2 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= av.note|default:"0"|floatformat:0|add:"0" %}
+                            <i class="fas fa-star text-yellow-500"></i>
+                            {% else %}
+                            <i class="far fa-star text-gray-300"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <span class="font-semibold text-gray-900">{{ av.note|default:"0" }}/5</span>
+                    </div>
+                    <span class="text-sm text-gray-500">{{ av.dateAvis|default:"-"|slice:":10" }}</span>
+                </div>
+                {% if av.commentaire %}
+                <p class="text-sm text-gray-700">{{ av.commentaire }}</p>
+                {% else %}
+                <p class="text-sm italic text-gray-400">Pas de commentaire</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% if avis|length > 5 %}
+        <div class="border-t border-gray-200 px-6 py-4">
+            <a href="{% url 'accounts:mes_avis_recus' %}" 
+               class="text-sm font-semibold text-brand-600 hover:text-brand-700">
+                Voir tous les avis ({{ avis|length }}) →
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Si pas de données -->
+    {% if not trajets and not avis %}
+    <div class="rounded-2xl border border-gray-200 bg-white p-12 text-center">
+        <i class="fas fa-chart-line mb-4 text-6xl text-gray-300"></i>
+        <h3 class="mb-2 text-xl font-semibold text-gray-900">Aucune donnée disponible</h3>
+        <p class="text-gray-600">Commencez à effectuer des trajets pour voir vos statistiques</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

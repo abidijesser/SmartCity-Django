@@ -1,0 +1,107 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}Toutes les Réservations - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+    <!-- Header -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <h1 class="mb-2 text-3xl font-bold text-gray-900">
+            <i class="fas fa-clipboard-list mr-3 text-brand-600"></i>Supervision des Réservations
+        </h1>
+        <p class="text-gray-600">Vue d'ensemble de toutes les réservations du système</p>
+    </div>
+
+    <!-- Statistiques rapides -->
+    {% if reservations %}
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div class="rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 to-white p-6">
+            <div class="mb-2 text-sm text-gray-600">Total Réservations</div>
+            <div class="text-3xl font-bold text-gray-900">{{ reservations|length }}</div>
+        </div>
+        
+        <div class="rounded-xl border border-gray-200 bg-gradient-to-br from-yellow-50 to-white p-6">
+            <div class="mb-2 text-sm text-gray-600">En attente</div>
+            <div class="text-3xl font-bold text-yellow-600">{{ count_en_attente }}</div>
+        </div>
+        
+        <div class="rounded-xl border border-gray-200 bg-gradient-to-br from-green-50 to-white p-6">
+            <div class="mb-2 text-sm text-gray-600">Confirmées</div>
+            <div class="text-3xl font-bold text-green-600">{{ count_confirmees }}</div>
+        </div>
+        
+        <div class="rounded-xl border border-gray-200 bg-gradient-to-br from-red-50 to-white p-6">
+            <div class="mb-2 text-sm text-gray-600">Annulées</div>
+            <div class="text-3xl font-bold text-red-600">{{ count_annulees }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Table des réservations -->
+    {% if reservations %}
+    <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-6 py-5">
+            <h2 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-list mr-2 text-brand-600"></i>Liste Complète
+            </h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Utilisateur</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Trajet</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Places</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Statut</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for reservation in reservations %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            {{ reservation.user|default:"N/A"|slice:"-30:" }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            {{ reservation.trajet|default:"N/A"|slice:"-30:" }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            {{ reservation.dateReservation|default:"-"|slice:":10" }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            {{ reservation.nombrePlaces|default:"-" }}
+                        </td>
+                        <td class="px-6 py-4 text-sm">
+                            {% if reservation.statut == "Confirmée" %}
+                            <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i>{{ reservation.statut }}
+                            </span>
+                            {% elif reservation.statut == "En attente" %}
+                            <span class="rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
+                                <i class="fas fa-clock mr-1"></i>{{ reservation.statut }}
+                            </span>
+                            {% elif reservation.statut == "Annulée" %}
+                            <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
+                                <i class="fas fa-times-circle mr-1"></i>{{ reservation.statut }}
+                            </span>
+                            {% else %}
+                            <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800">
+                                {{ reservation.statut|default:"Inconnu" }}
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="rounded-2xl border border-gray-200 bg-white p-12 text-center">
+        <i class="fas fa-clipboard-list mb-4 text-6xl text-gray-300"></i>
+        <h3 class="mb-2 text-xl font-semibold text-gray-900">Aucune réservation</h3>
+        <p class="text-gray-600">Il n'y a pas encore de réservations dans le système</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends "accounts/base_modern.html" %}
+
+{% block title %}Rechercher un Trajet - Transport Intelligent{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+    <!-- Header -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-8">
+        <h1 class="mb-2 text-3xl font-bold text-gray-900">
+            <i class="fas fa-search-location mr-3 text-brand-600"></i>Rechercher un Trajet
+        </h1>
+        <p class="text-gray-600">Trouvez le meilleur trajet pour votre destination</p>
+    </div>
+
+    <!-- Formulaire de recherche -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-6">
+        <h2 class="mb-4 text-xl font-semibold text-gray-900">
+            <i class="fas fa-filter mr-2 text-brand-600"></i>Critères de recherche
+        </h2>
+        
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <!-- Ville départ -->
+                <div>
+                    <label for="ville_depart" class="mb-2 block text-sm font-medium text-gray-700">
+                        <i class="fas fa-map-marker-alt mr-1 text-green-600"></i>Ville de départ
+                    </label>
+                    <input type="text" 
+                           id="ville_depart" 
+                           name="ville_depart" 
+                           value="{{ ville_depart|default:'' }}"
+                           placeholder="Ex: Tunis"
+                           class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                </div>
+
+                <!-- Ville arrivée -->
+                <div>
+                    <label for="ville_arrivee" class="mb-2 block text-sm font-medium text-gray-700">
+                        <i class="fas fa-map-marker-alt mr-1 text-red-600"></i>Ville d'arrivée
+                    </label>
+                    <input type="text" 
+                           id="ville_arrivee" 
+                           name="ville_arrivee" 
+                           value="{{ ville_arrivee|default:'' }}"
+                           placeholder="Ex: Ariana"
+                           class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                </div>
+
+                <!-- Heure minimale -->
+                <div>
+                    <label for="heure_min" class="mb-2 block text-sm font-medium text-gray-700">
+                        <i class="fas fa-clock mr-1 text-blue-600"></i>Heure minimale
+                    </label>
+                    <input type="time" 
+                           id="heure_min" 
+                           name="heure_min" 
+                           value="{{ heure_min|default:'' }}"
+                           class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                </div>
+            </div>
+
+            <button type="submit" 
+                    class="flex w-full items-center justify-center rounded-lg bg-brand-600 px-6 py-3 font-semibold text-white transition hover:bg-brand-700 md:w-auto">
+                <i class="fas fa-search mr-2"></i>Rechercher
+            </button>
+        </form>
+    </div>
+
+    <!-- Résultats -->
+    {% if trajets %}
+    <div class="rounded-2xl border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-6 py-5">
+            <h2 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-list mr-2 text-brand-600"></i>{{ trajets|length }} Trajet(s) trouvé(s)
+            </h2>
+        </div>
+        <div class="divide-y divide-gray-200">
+            {% for trajet in trajets %}
+            <div class="p-6 transition hover:bg-gray-50">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <div class="mb-3 flex items-center space-x-4">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-map-marker-alt text-green-600"></i>
+                                <span class="font-semibold text-gray-900">{{ trajet.departNom|default:"N/A" }}</span>
+                                {% if trajet.departVille %}
+                                <span class="text-sm text-gray-500">({{ trajet.departVille }})</span>
+                                {% endif %}
+                            </div>
+                            <i class="fas fa-arrow-right text-gray-400"></i>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-map-marker-alt text-red-600"></i>
+                                <span class="font-semibold text-gray-900">{{ trajet.arriveeNom|default:"N/A" }}</span>
+                                {% if trajet.arriveeVille %}
+                                <span class="text-sm text-gray-500">({{ trajet.arriveeVille }})</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+                            {% if trajet.heureDepart %}
+                            <div class="text-sm">
+                                <span class="text-gray-500">Départ:</span>
+                                <span class="ml-1 font-medium text-gray-900">{{ trajet.heureDepart }}</span>
+                            </div>
+                            {% endif %}
+                            {% if trajet.heureArrivee %}
+                            <div class="text-sm">
+                                <span class="text-gray-500">Arrivée:</span>
+                                <span class="ml-1 font-medium text-gray-900">{{ trajet.heureArrivee }}</span>
+                            </div>
+                            {% endif %}
+                            {% if trajet.distanceTrajet %}
+                            <div class="text-sm">
+                                <span class="text-gray-500">Distance:</span>
+                                <span class="ml-1 font-medium text-gray-900">{{ trajet.distanceTrajet }} km</span>
+                            </div>
+                            {% endif %}
+                            {% if trajet.capacite %}
+                            <div class="text-sm">
+                                <span class="text-gray-500">Capacité:</span>
+                                <span class="ml-1 font-medium text-gray-900">{{ trajet.capacite }} places</span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        {% if trajet.vehiculeNom %}
+                        <div class="mt-2 text-sm text-gray-600">
+                            <i class="fas fa-bus mr-1"></i>{{ trajet.vehiculeNom }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <a href="{% url 'accounts:reserver_trajet' trajet.trajet %}" 
+                       class="ml-4 rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">
+                        <i class="fas fa-ticket-alt mr-1"></i>Réserver
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% elif request.method == 'POST' %}
+    <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-800">
+        <i class="fas fa-info-circle mr-2"></i>Aucun trajet trouvé pour ces critères. Essayez d'autres villes ou horaires.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
