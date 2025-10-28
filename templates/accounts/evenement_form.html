@@ -24,13 +24,33 @@
             {% csrf_token %}
             
             <div>
-                <label class="mb-2 block text-sm font-medium text-gray-900">{{ form.typeEvenement.label }}</label>
-                {{ form.typeEvenement }}
+                <label class="mb-2 block text-sm font-medium text-gray-900">
+                    <i class="fas fa-exclamation-triangle mr-2 text-brand-600"></i>
+                    {{ form.type_evt.label }}
+                </label>
+                {{ form.type_evt }}
+                {% if form.type_evt.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.type_evt.errors.0 }}</p>
+                {% endif %}
             </div>
 
             <div>
-                <label class="mb-2 block text-sm font-medium text-gray-900">{{ form.type_evt.label }}</label>
-                {{ form.type_evt }}
+                <label for="route" class="mb-2 block text-sm font-medium text-gray-900">
+                    <i class="fas fa-road mr-2 text-brand-600"></i>
+                    Route <span class="text-gray-400">(optionnel)</span>
+                </label>
+                <select name="route" id="route"
+                        class="w-full rounded-lg border border-gray-300 p-3 text-gray-900 focus:border-brand-500 focus:ring-brand-500">
+                    <option value="">-- Sélectionnez une route --</option>
+                    {% for route in routes %}
+                    <option value="{{ route.route }}">
+                        {{ route.nom }}
+                        {% if route.longueur %} - {{ route.longueur }} km{% endif %}
+                        {% if route.etatRoute %} ({{ route.etatRoute }}){% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+                <p class="mt-1 text-xs text-gray-500">Route concernée par l'événement</p>
             </div>
 
             <div>

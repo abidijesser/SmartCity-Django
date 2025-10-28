@@ -286,20 +286,18 @@ class EvenementForm(forms.Form):
         ('Manifestation', 'Manifestation'),
     ]
     
-    typeEvenement = forms.CharField(
-        required=True,
-        max_length=200,
-        label="Type d'événement",
-        widget=forms.TextInput(attrs={
-            'class': 'w-full rounded-lg border border-gray-300 p-3 text-gray-900 focus:border-brand-500 focus:ring-brand-500',
-            'placeholder': 'Ex: Accident, Embouteillage, Travaux'
-        })
-    )
-    
     type_evt = forms.ChoiceField(
         required=True,
         choices=TYPE_CHOICES,
-        label="Catégorie",
+        label="Type d'événement",
+        widget=forms.Select(attrs={
+            'class': 'w-full rounded-lg border border-gray-300 p-3 text-gray-900 focus:border-brand-500 focus:ring-brand-500'
+        })
+    )
+    
+    route = forms.CharField(
+        required=False,
+        label="Route",
         widget=forms.Select(attrs={
             'class': 'w-full rounded-lg border border-gray-300 p-3 text-gray-900 focus:border-brand-500 focus:ring-brand-500'
         })

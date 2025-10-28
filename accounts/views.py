@@ -1075,6 +1075,16 @@ def evenements_list_view(request):
         try:
             evenements = sparql.get_evenements()
             for e in evenements:
+                # Extraire le nom de la classe depuis l'URI (gérer # et /)
+                type_uri = e.get('type', '')
+                if type_uri:
+                    if '#' in type_uri:
+                        type_name = type_uri.split('#')[-1]
+                    else:
+                        type_name = type_uri.split('/')[-1]
+                else:
+                    type_name = 'ÉvénementTrafic'
+                
                 context['evenements'].append({
                     'uri': e.get('evenement', ''),
                     'typeEvenement': e.get('typeEvenement', 'N/A'),
@@ -1082,7 +1092,7 @@ def evenements_list_view(request):
                     'description': e.get('description', 'N/A'),
                     'latitude': e.get('latitude', 'N/A'),
                     'longitude': e.get('longitude', 'N/A'),
-                    'type': e.get('type', '').split('#')[-1] if e.get('type', '') else 'ÉvénementTrafic'
+                    'type': type_name
                 })
         except Exception as e:
             context['error'] = str(e)
@@ -1097,13 +1107,14 @@ def evenement_create_view(request):
         form = EvenementForm(request.POST)
         if form.is_valid():
             date_evt = form.cleaned_data.get('dateEvenement')
+            route_uri = form.cleaned_data.get('route') or None
             success = sparql.create_evenement(
-                typeEvenement=form.cleaned_data['typeEvenement'],
+                type_evt=form.cleaned_data['type_evt'],
                 dateEvenement=date_evt.isoformat() if date_evt else None,
                 description=form.cleaned_data.get('description', ''),
                 latitude=form.cleaned_data.get('latitude'),
                 longitude=form.cleaned_data.get('longitude'),
-                type_evt=form.cleaned_data['type_evt']
+                route_uri=route_uri
             )
             
             if success:
@@ -1114,8 +1125,17 @@ def evenement_create_view(request):
     else:
         form = EvenementForm()
     
+    # Charger les routes pour le formulaire
+    routes = []
+    if FUSEKI_AVAILABLE:
+        try:
+            routes = sparql.get_routes()
+        except Exception as e:
+            messages.error(request, f'Erreur lors du chargement des routes: {str(e)}')
+    
     return render(request, 'accounts/evenement_form.html', {
         'form': form,
+        'routes': routes,
         'title': 'Créer un événement',
         'submit_label': 'Créer l\'événement',
         'fuseki_available': FUSEKI_AVAILABLE
@@ -1697,6 +1717,43 @@ def search_trajets_view(request):
                     ville_arrivee=ville_arrivee if ville_arrivee else None,
                     heure_min=heure_min if heure_min else None
                 )
+                
+                # Ajouter les avertissements pour les trajets avec événements sur leur route
+                for trajet in trajets:
+                    route_uri = trajet.get('route')
+                    print(f"DEBUG - Trajet: {trajet.get('trajet')}, Route URI: {route_uri}")  # DEBUG
+                    if route_uri:
+                        # Récupérer les événements sur cette route
+                        evenements = sparql.get_evenements_by_route(route_uri)
+                        print(f"DEBUG - Événements trouvés: {len(evenements) if evenements else 0}")  # DEBUG
+                        if evenements:
+                            # Prendre le premier événement (le plus récent)
+                            evt = evenements[0]
+                            type_evt = evt.get('type', '')
+                            print(f"DEBUG - Type événement: {type_evt}")  # DEBUG
+                            
+                            # Extraire le nom du type (gérer # et /)
+                            if type_evt:
+                                if '#' in type_evt:
+                                    type_name = type_evt.split('#')[-1]
+                                else:
+                                    type_name = type_evt.split('/')[-1]
+                            else:
+                                type_name = 'ÉvénementTrafic'
+                            
+                            print(f"DEBUG - Type name extrait: {type_name}")  # DEBUG
+                            
+                            # Générer le message d'avertissement selon le type
+                            if type_name == 'Accident':
+                                trajet['warning'] = "⚠️ Attention : accident signalé sur cette route. Retard possible."
+                            elif type_name == 'Travaux':
+                                trajet['warning'] = "⚠️ Attention : travaux signalés sur cette route. Retard possible."
+                            elif type_name == 'Manifestation':
+                                trajet['warning'] = "⚠️ Attention : manifestation signalée sur cette route. Retard possible."
+                            else:
+                                trajet['warning'] = "⚠️ Attention : événement signalé sur cette route. Retard possible."
+                            
+                            print(f"DEBUG - Warning ajouté: {trajet.get('warning')}")  # DEBUG
                 
                 context['trajets'] = trajets
                 context['ville_depart'] = ville_depart

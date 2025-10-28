@@ -131,6 +131,12 @@
                             <i class="fas fa-bus mr-1"></i>{{ trajet.vehiculeNom }}
                         </div>
                         {% endif %}
+
+                        {% if trajet.warning %}
+                        <div class="mt-3 rounded-lg border border-yellow-300 bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+                            {{ trajet.warning }}
+                        </div>
+                        {% endif %}
                     </div>
 
                     <a href="{% url 'accounts:reserver_trajet' trajet.trajet %}" 

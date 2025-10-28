@@ -794,9 +794,29 @@ ORDER BY DESC(?dateEvenement)
 """
         return self.execute_query(query)
     
-    def create_evenement(self, typeEvenement: str, dateEvenement: str = None, 
+    def get_evenements_by_route(self, route_uri: str) -> List[Dict]:
+        """Récupère tous les événements actifs sur une route spécifique"""
+        query = f"""
+SELECT ?evenement ?typeEvenement ?dateEvenement ?description ?type
+WHERE {{
+    ?evenement transport:surRoute <{route_uri}> ;
+               rdf:type/rdfs:subClassOf* transport:ÉvénementTrafic .
+    OPTIONAL {{ ?evenement transport:typeEvenement ?typeEvenement }}
+    OPTIONAL {{ ?evenement transport:dateEvenement ?dateEvenement }}
+    OPTIONAL {{ ?evenement transport:description ?description }}
+    OPTIONAL {{ 
+        ?evenement rdf:type ?type .
+        FILTER (?type != transport:ÉvénementTrafic)
+    }}
+}}
+ORDER BY DESC(?dateEvenement)
+"""
+        return self.execute_query(query)
+    
+    def create_evenement(self, type_evt: str = "ÉvénementTrafic",
+                         dateEvenement: str = None, 
                          description: str = None, latitude: float = None, 
-                         longitude: float = None, type_evt: str = "ÉvénementTrafic") -> bool:
+                         longitude: float = None, route_uri: str = None) -> bool:
         """Crée un nouvel événement de trafic dans l'ontologie"""
         import uuid
         evt_id = str(uuid.uuid4())[:8]
@@ -806,8 +826,10 @@ ORDER BY DESC(?dateEvenement)
 INSERT DATA {{
     <{evt_uri}> rdf:type transport:ÉvénementTrafic ;
                 rdf:type transport:{type_evt} ;
-                transport:typeEvenement "{typeEvenement}" .
+                transport:typeEvenement "{type_evt}" .
 """
+        if route_uri:
+            insert_query += f'    <{evt_uri}> transport:surRoute <{route_uri}> .\n'
         if dateEvenement:
             insert_query += f'    <{evt_uri}> transport:dateEvenement "{dateEvenement}" .\n'
         if description:
@@ -1337,6 +1359,7 @@ SELECT DISTINCT ?trajet ?heureDepart ?heureArrivee ?dureeTrajet ?distanceTrajet
        ?departStation ?departNom ?departVille
        ?arriveeStation ?arriveeNom ?arriveeVille
        ?vehicule ?vehiculeNom ?capacite
+       ?route ?routeNom
 WHERE {
     ?trajet rdf:type transport:Trajet .
     
@@ -1365,6 +1388,12 @@ WHERE {
         ?trajet transport:utiliseVehicule ?vehicule .
         ?vehicule transport:nom ?vehiculeNom .
         OPTIONAL { ?vehicule transport:capacite ?capacite }
+    }
+    
+    # Route (si lié à une route)
+    OPTIONAL {
+        ?trajet transport:utiliseRoute ?route .
+        ?route transport:nom ?routeNom
     }
     
     # Horaires
