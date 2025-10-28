@@ -50,6 +50,7 @@
             <table class="w-full">
                 <thead class="bg-gray-50">
                     <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Type Véhicule</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Heure Départ</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Heure Arrivée</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Jour</th>
@@ -60,6 +61,23 @@
                 <tbody class="divide-y divide-gray-200">
                     {% for horaire in horaires %}
                     <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                            {% if horaire.typeVehicule == 'Bus' %}
+                                <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800">
+                                    <i class="fas fa-bus mr-1"></i>Bus
+                                </span>
+                            {% elif horaire.typeVehicule == 'Taxi' %}
+                                <span class="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-800">
+                                    <i class="fas fa-taxi mr-1"></i>Taxi
+                                </span>
+                            {% elif horaire.typeVehicule == 'Metro' %}
+                                <span class="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-800">
+                                    <i class="fas fa-subway mr-1"></i>Metro
+                                </span>
+                            {% else %}
+                                <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-800">N/A</span>
+                            {% endif %}
+                        </td>
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">
                             <i class="fas fa-arrow-right mr-2 text-green-600"></i>{{ horaire.heureDepart }}
                         </td>

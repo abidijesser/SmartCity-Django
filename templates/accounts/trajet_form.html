@@ -17,17 +17,6 @@
         <form method="post" class="space-y-6">
             {% csrf_token %}
             
-            <!-- Nom du trajet (optionnel) -->
-            <div>
-                <label for="nom_trajet" class="block text-sm font-medium text-gray-700 mb-2">
-                    Nom du trajet <span class="text-gray-400">(optionnel)</span>
-                </label>
-                <input type="text" name="nom_trajet" id="nom_trajet"
-                       class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:ring-brand-500"
-                       placeholder="Ex: Trajet Matinal, Ligne 1, etc.">
-                <p class="mt-1 text-sm text-gray-500">Si non renseigné, un nom sera généré automatiquement</p>
-            </div>
-
             <!-- Station de départ -->
             <div>
                 <label for="depart_station" class="block text-sm font-medium text-gray-700 mb-2">
@@ -56,6 +45,24 @@
                 </select>
             </div>
 
+            <!-- Type de Trajet -->
+            <div>
+                <label for="type_trajet" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-route mr-1 text-brand-600"></i>
+                    Type de trajet <span class="text-red-500">*</span>
+                </label>
+                <select name="type_trajet" id="type_trajet" required
+                        class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:ring-brand-500">
+                    <option value="TrajetCourt">Trajet Court</option>
+                    <option value="TrajetLong">Trajet Long</option>
+                    <option value="TrajetTouristique">Trajet Touristique</option>
+                </select>
+                <p class="mt-1 text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Court: &lt;50km | Long: &gt;50km | Touristique: sites d'intérêt
+                </p>
+            </div>
+
             <!-- Véhicule (optionnel) -->
             <div>
                 <label for="vehicule" class="block text-sm font-medium text-gray-700 mb-2">
@@ -70,24 +77,50 @@
                 </select>
             </div>
 
-            <!-- Heure de départ -->
+            <!-- Route (créée par le gestionnaire) -->
             <div>
-                <label for="heure_depart" class="block text-sm font-medium text-gray-700 mb-2">
-                    Heure de départ <span class="text-gray-400">(optionnel)</span>
+                <label for="route" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-road mr-1 text-brand-600"></i>
+                    Route <span class="text-gray-400">(optionnel)</span>
                 </label>
-                <input type="datetime-local" name="heure_depart" id="heure_depart"
-                       class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:ring-brand-500">
-                <p class="mt-1 text-sm text-gray-500">Format: AAAA-MM-JJ HH:MM</p>
+                <select name="route" id="route"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:ring-brand-500">
+                    <option value="">-- Sélectionnez une route --</option>
+                    {% for route in routes %}
+                    <option value="{{ route.route }}">
+                        {{ route.nom }}
+                        {% if route.longueur %} - {{ route.longueur }} km{% endif %}
+                        {% if route.etatRoute %} ({{ route.etatRoute }}){% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+                <p class="mt-1 text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Route pré-définie par le gestionnaire
+                </p>
             </div>
 
-            <!-- Heure d'arrivée -->
-            <div>
-                <label for="heure_arrivee" class="block text-sm font-medium text-gray-700 mb-2">
-                    Heure d'arrivée <span class="text-gray-400">(optionnel)</span>
+            <!-- Horaire (créé par le gestionnaire) -->
+            <div class="col-span-2">
+                <label for="horaire" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-clock mr-1 text-brand-600"></i>
+                    Horaire <span class="text-red-500">*</span>
                 </label>
-                <input type="datetime-local" name="heure_arrivee" id="heure_arrivee"
-                       class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:ring-brand-500">
-                <p class="mt-1 text-sm text-gray-500">Format: AAAA-MM-JJ HH:MM</p>
+                <select name="horaire" id="horaire" required
+                        class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-brand-500 focus:ring-brand-500">
+                    <option value="">-- Sélectionnez un horaire --</option>
+                    {% for horaire in horaires %}
+                    <option value="{{ horaire.horaire }}">
+                        {% if horaire.typeVehicule %}[{{ horaire.typeVehicule }}]{% endif %}
+                        {{ horaire.heureDepart|slice:":5" }} → {{ horaire.heureArrivee|slice:":5" }}
+                        {% if horaire.jour %}({{ horaire.jour }}){% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+                <p class="mt-1 text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Sélectionnez un horaire créé par le gestionnaire
+                </p>
             </div>
 
             <!-- Distance -->

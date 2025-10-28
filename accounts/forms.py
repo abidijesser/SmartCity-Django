@@ -112,6 +112,12 @@ class HoraireForm(forms.Form):
         ('HoraireTrafic', 'Horaire Trafic'),
     ]
     
+    TYPE_VEHICULE_CHOICES = [
+        ('Bus', 'Bus'),
+        ('Taxi', 'Taxi'),
+        ('Metro', 'Metro'),
+    ]
+    
     JOUR_CHOICES = [
         ('Lundi', 'Lundi'),
         ('Mardi', 'Mardi'),
@@ -126,6 +132,16 @@ class HoraireForm(forms.Form):
         required=True,
         choices=TYPE_CHOICES,
         label="Type/Catégorie d'horaire",
+        widget=forms.Select(attrs={
+            'class': 'w-full rounded-lg border border-gray-300 p-3 text-gray-900 focus:border-brand-500 focus:ring-brand-500'
+        })
+    )
+    
+    typeVehicule = forms.ChoiceField(
+        required=True,
+        choices=TYPE_VEHICULE_CHOICES,
+        label="Type de véhicule",
+        initial='Bus',
         widget=forms.Select(attrs={
             'class': 'w-full rounded-lg border border-gray-300 p-3 text-gray-900 focus:border-brand-500 focus:ring-brand-500'
         })
@@ -155,6 +171,26 @@ class HoraireForm(forms.Form):
         required=False,
         choices=[('', '-- Tous les jours --')] + JOUR_CHOICES,
         label="Jour de la semaine",
+        widget=forms.Select(attrs={
+            'class': 'w-full rounded-lg border border-gray-300 p-3 text-gray-900 focus:border-brand-500 focus:ring-brand-500'
+        })
+    )
+
+
+class TrajetForm(forms.Form):
+    """Formulaire pour créer un trajet"""
+    
+    TYPE_TRAJET_CHOICES = [
+        ('TrajetCourt', 'Trajet Court'),
+        ('TrajetLong', 'Trajet Long'),
+        ('TrajetTouristique', 'Trajet Touristique'),
+    ]
+    
+    type_trajet = forms.ChoiceField(
+        required=True,
+        choices=TYPE_TRAJET_CHOICES,
+        label="Type de trajet",
+        initial='TrajetCourt',
         widget=forms.Select(attrs={
             'class': 'w-full rounded-lg border border-gray-300 p-3 text-gray-900 focus:border-brand-500 focus:ring-brand-500'
         })

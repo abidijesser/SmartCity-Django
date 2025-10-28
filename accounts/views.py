@@ -486,6 +486,9 @@ def trajet_create_view(request):
         depart_station_uri = request.POST.get('depart_station')
         arrivee_station_uri = request.POST.get('arrivee_station')
         vehicule_uri = request.POST.get('vehicule') or None
+        horaire_uri = request.POST.get('horaire') or None
+        route_uri = request.POST.get('route') or None
+        type_trajet = request.POST.get('type_trajet', 'TrajetCourt')
         heure_depart = request.POST.get('heure_depart') or None
         heure_arrivee = request.POST.get('heure_arrivee') or None
         distance = request.POST.get('distance')
@@ -508,12 +511,15 @@ def trajet_create_view(request):
             depart_station_uri=depart_station_uri,
             arrivee_station_uri=arrivee_station_uri,
             vehicule_uri=vehicule_uri,
+            horaire_uri=horaire_uri,
+            route_uri=route_uri,
             heure_depart=heure_depart,
             heure_arrivee=heure_arrivee,
             distance=distance,
             duree=duree,
             nom_trajet=nom_trajet,
-            conducteur_uri=conducteur_uri
+            conducteur_uri=conducteur_uri,
+            type_trajet=type_trajet
         )
         
         if success:
@@ -522,20 +528,26 @@ def trajet_create_view(request):
         else:
             messages.error(request, 'Erreur lors de la création du trajet.')
     
-    # Récupérer les stations et véhicules pour le formulaire
+    # Récupérer les stations, véhicules, horaires et routes pour le formulaire
     stations = []
     vehicules = []
+    horaires = []
+    routes = []
     
     if FUSEKI_AVAILABLE:
         try:
             stations = sparql.get_all_stations()
             vehicules = sparql.get_vehicles()
+            horaires = sparql.get_horaires()
+            routes = sparql.get_routes()
         except Exception as e:
             messages.error(request, f'Erreur lors du chargement des données: {str(e)}')
     
     return render(request, 'accounts/trajet_form.html', {
         'stations': stations,
         'vehicules': vehicules,
+        'horaires': horaires,
+        'routes': routes,
         'title': 'Créer un Trajet',
         'submit_label': 'Créer',
         'fuseki_available': FUSEKI_AVAILABLE
@@ -751,6 +763,7 @@ def horaires_list_view(request):
                     'uri': h.get('horaire', ''),
                     'heureDepart': h.get('heureDepart', 'N/A'),
                     'heureArrivee': h.get('heureArrivee', 'N/A'),
+                    'typeVehicule': h.get('typeVehicule', 'N/A'),
                     'jour': h.get('jour', 'Tous les jours'),
                     'type': h.get('type', '').split('#')[-1] if h.get('type', '') else 'Horaire'
                 })
@@ -769,6 +782,7 @@ def horaire_create_view(request):
             success = sparql.create_horaire(
                 heureDepart=str(form.cleaned_data['heureDepart']),
                 heureArrivee=str(form.cleaned_data['heureArrivee']),
+                typeVehicule=form.cleaned_data.get('typeVehicule', 'Bus'),
                 jour=form.cleaned_data.get('jour') or None,
                 type_horaire=form.cleaned_data['type_horaire']
             )

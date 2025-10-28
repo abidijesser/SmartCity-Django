@@ -269,9 +269,12 @@ WHERE {{
         return self.execute_update(update_query)
     
     def addTrajet(self, depart_station_uri: str, arrivee_station_uri: str, 
-                  vehicule_uri: str = None, heure_depart: str = None, 
-                  heure_arrivee: str = None, distance: float = None, 
-                  duree: float = None, nom_trajet: str = None, conducteur_uri: str = None) -> bool:
+                  vehicule_uri: str = None, horaire_uri: str = None,
+                  route_uri: str = None,
+                  heure_depart: str = None, heure_arrivee: str = None, 
+                  distance: float = None, duree: float = None, 
+                  nom_trajet: str = None, conducteur_uri: str = None,
+                  type_trajet: str = "TrajetCourt") -> bool:
         """
         Crée un nouveau trajet dans l'ontologie
         
@@ -279,12 +282,15 @@ WHERE {{
             depart_station_uri: URI de la station de départ (requis)
             arrivee_station_uri: URI de la station d'arrivée (requis)
             vehicule_uri: URI du véhicule utilisé (optionnel)
-            heure_depart: Heure de départ au format ISO 8601 (optionnel)
-            heure_arrivee: Heure d'arrivée au format ISO 8601 (optionnel)
+            horaire_uri: URI de l'horaire (optionnel, prioritaire sur heure_depart/heure_arrivee)
+            route_uri: URI de la route (optionnel)
+            heure_depart: Heure de départ au format ISO 8601 (optionnel, si pas d'horaire_uri)
+            heure_arrivee: Heure d'arrivée au format ISO 8601 (optionnel, si pas d'horaire_uri)
             distance: Distance du trajet en km (optionnel)
             duree: Durée du trajet en heures (optionnel)
             nom_trajet: Nom du trajet pour générer l'URI (optionnel)
             conducteur_uri: URI du conducteur (optionnel)
+            type_trajet: Type de trajet (TrajetCourt, TrajetLong, TrajetTouristique)
             
         Returns:
             bool: True si succès, False sinon
@@ -303,6 +309,7 @@ WHERE {{
         insert_query = f"""
 INSERT DATA {{
     <{trajet_uri}> rdf:type transport:Trajet ;
+                   rdf:type transport:{type_trajet} ;
                    transport:aPourDepart <{depart_station_uri}> ;
                    transport:aPourArrivee <{arrivee_station_uri}> .
 """
@@ -311,11 +318,20 @@ INSERT DATA {{
         if vehicule_uri:
             insert_query += f'    <{trajet_uri}> transport:utiliseVehicule <{vehicule_uri}> .\n'
         
-        if heure_depart:
-            insert_query += f'    <{trajet_uri}> transport:heureDepart "{heure_depart}"^^xsd:dateTime .\n'
+        # Si route_uri est fourni, lier le trajet à la route
+        if route_uri:
+            insert_query += f'    <{trajet_uri}> transport:utiliseRoute <{route_uri}> .\n'
         
-        if heure_arrivee:
-            insert_query += f'    <{trajet_uri}> transport:heureArrivee "{heure_arrivee}"^^xsd:dateTime .\n'
+        # Si horaire_uri est fourni, lier le trajet à l'horaire
+        if horaire_uri:
+            insert_query += f'    <{trajet_uri}> transport:aHoraire <{horaire_uri}> .\n'
+        else:
+            # Sinon, utiliser les heures manuelles (ancien système)
+            if heure_depart:
+                insert_query += f'    <{trajet_uri}> transport:heureDepart "{heure_depart}"^^xsd:dateTime .\n'
+            
+            if heure_arrivee:
+                insert_query += f'    <{trajet_uri}> transport:heureArrivee "{heure_arrivee}"^^xsd:dateTime .\n'
         
         if distance is not None:
             insert_query += f'    <{trajet_uri}> transport:distanceTrajet "{distance}"^^xsd:float .\n'
@@ -335,7 +351,8 @@ INSERT DATA {{
         query = """
 SELECT ?trajet ?heureDepart ?heureArrivee ?dureeTrajet ?distanceTrajet 
        ?departStation ?departNom ?arriveeStation ?arriveeNom 
-       ?vehicule ?vehiculeNom
+       ?vehicule ?vehiculeNom ?horaire ?horaireTypeVehicule
+       ?route ?routeNom
 WHERE {
     ?trajet rdf:type transport:Trajet .
     
@@ -357,7 +374,21 @@ WHERE {
         ?vehicule transport:nom ?vehiculeNom
     }
     
-    # Propriétés du trajet
+    # Route (si lié à une route)
+    OPTIONAL {
+        ?trajet transport:utiliseRoute ?route .
+        ?route transport:nom ?routeNom
+    }
+    
+    # Horaire (si lié à un horaire)
+    OPTIONAL {
+        ?trajet transport:aHoraire ?horaire .
+        ?horaire transport:heureDepart ?heureDepart .
+        ?horaire transport:heureArrivee ?heureArrivee .
+        OPTIONAL { ?horaire transport:typeVehicule ?horaireTypeVehicule }
+    }
+    
+    # Propriétés du trajet (si pas d'horaire, heures manuelles)
     OPTIONAL { ?trajet transport:heureDepart ?heureDepart }
     OPTIONAL { ?trajet transport:heureArrivee ?heureArrivee }
     OPTIONAL { ?trajet transport:dureeTrajet ?dureeTrajet }
@@ -507,23 +538,25 @@ DELETE WHERE {{
     def get_horaires(self) -> List[Dict]:
         """Récupère tous les horaires"""
         query = """
-SELECT ?horaire ?heureDepart ?heureArrivee ?jour ?type
+SELECT ?horaire ?heureDepart ?heureArrivee ?typeVehicule ?jour ?type
 WHERE {
     ?horaire rdf:type/rdfs:subClassOf* transport:Horaire .
     OPTIONAL { ?horaire transport:heureDepart ?heureDepart }
     OPTIONAL { ?horaire transport:heureArrivee ?heureArrivee }
+    OPTIONAL { ?horaire transport:typeVehicule ?typeVehicule }
     OPTIONAL { ?horaire transport:jour ?jour }
     OPTIONAL { 
         ?horaire rdf:type ?type .
         FILTER (?type != transport:Horaire)
     }
 }
-ORDER BY ?jour ?heureDepart
+ORDER BY ?typeVehicule ?jour ?heureDepart
 """
         return self.execute_query(query)
     
-    def create_horaire(self, heureDepart: str, heureArrivee: str, jour: str = None, type_horaire: str = "Horaire") -> bool:
-        """Crée un nouvel horaire dans l'ontologie"""
+    def create_horaire(self, heureDepart: str, heureArrivee: str, typeVehicule: str = "Bus", 
+                      jour: str = None, type_horaire: str = "Horaire") -> bool:
+        """Crée un nouvel horaire dans l'ontologie pour un type de véhicule spécifique"""
         import uuid
         horaire_id = str(uuid.uuid4())[:8]
         horaire_uri = f"{self.TRANSPORT_PREFIX}Horaire_{horaire_id}"
@@ -533,7 +566,8 @@ INSERT DATA {{
     <{horaire_uri}> rdf:type transport:Horaire ;
                     rdf:type transport:{type_horaire} ;
                     transport:heureDepart "{heureDepart}" ;
-                    transport:heureArrivee "{heureArrivee}" .
+                    transport:heureArrivee "{heureArrivee}" ;
+                    transport:typeVehicule "{typeVehicule}" .
 """
         if jour:
             insert_query += f'    <{horaire_uri}> transport:jour "{jour}" .\n'
