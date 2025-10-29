@@ -1,6 +1,3 @@
-"""
-Utilitaires SPARQL pour l'application Django
-"""
 from typing import List, Dict, Optional
 import requests
 import json
@@ -72,22 +69,22 @@ PREFIX transport: <http://www.semanticweb.org/dell/ontologies/2025/9/untitled-on
     # ===== REQUÊTES SPÉCIFIQUES =====
     
     def get_all_stations(self) -> List[Dict]:
-        """Récupère toutes les stations avec leurs types"""
+        
         query = """
-SELECT ?station ?nom ?latitude ?longitude ?adresse ?type
-WHERE {
-    ?station rdf:type/rdfs:subClassOf* transport:Station .
-    OPTIONAL { ?station transport:nom ?nom }
-    OPTIONAL { ?station transport:latitude ?latitude }
-    OPTIONAL { ?station transport:longitude ?longitude }
-    OPTIONAL { ?station transport:adresse ?adresse }
-    OPTIONAL { 
-        ?station rdf:type ?type .
-        FILTER (?type != transport:Station)
-    }
-}
-ORDER BY ?nom
-"""
+            SELECT ?station ?nom ?latitude ?longitude ?adresse ?type
+            WHERE {
+                ?station rdf:type/rdfs:subClassOf* transport:Station .
+                OPTIONAL { ?station transport:nom ?nom }
+                OPTIONAL { ?station transport:latitude ?latitude }
+                OPTIONAL { ?station transport:longitude ?longitude }
+                OPTIONAL { ?station transport:adresse ?adresse }
+                OPTIONAL { 
+                    ?station rdf:type ?type .
+                    FILTER (?type != transport:Station)
+                }
+            }
+            ORDER BY ?nom
+            """
         return self.execute_query(query)
     
     def get_vehicles(self) -> List[Dict]:
