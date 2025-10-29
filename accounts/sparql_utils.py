@@ -87,6 +87,39 @@ PREFIX transport: <http://www.semanticweb.org/dell/ontologies/2025/9/untitled-on
             """
         return self.execute_query(query)
     
+    def search_stations(self, keyword: Optional[str] = None, type_station: Optional[str] = None,
+                        ville_keyword: Optional[str] = None, limit: int = 20) -> List[Dict]:
+        """Recherche des stations par mot-clé, type et/ou nom de ville"""
+        query = """
+SELECT ?station ?nom ?adresse ?latitude ?longitude ?type ?villeNom
+WHERE {
+    ?station rdf:type/rdfs:subClassOf* transport:Station .
+    OPTIONAL { ?station transport:nom ?nom }
+    OPTIONAL { ?station transport:adresse ?adresse }
+    OPTIONAL { ?station transport:latitude ?latitude }
+    OPTIONAL { ?station transport:longitude ?longitude }
+    OPTIONAL { 
+        ?station rdf:type ?type .
+        FILTER (?type != transport:Station)
+    }
+    OPTIONAL {
+        ?station transport:situeDans ?ville .
+        ?ville transport:nom ?villeNom
+    }
+"""
+        if keyword:
+            query += f'    FILTER (BOUND(?nom) && CONTAINS(LCASE(STR(?nom)), LCASE("{keyword}")))\n'
+        if type_station:
+            query += f'    FILTER EXISTS {{ ?station rdf:type transport:{type_station} }}\n'
+        if ville_keyword:
+            query += f'    FILTER (BOUND(?villeNom) && CONTAINS(LCASE(STR(?villeNom)), LCASE("{ville_keyword}")))\n'
+        query += f"""
+}}
+ORDER BY ?nom
+LIMIT {limit}
+"""
+        return self.execute_query(query)
+    
     def get_vehicles(self) -> List[Dict]:
         """Récupère tous les véhicules"""
         query = """
@@ -136,6 +169,30 @@ WHERE {
         
         query += "\n}"
         return self.execute_query(query)
+    
+    def recommend_trips(self, depart: Optional[str] = None, arrivee: Optional[str] = None,
+                        order_by: str = 'duree', limit: int = 10) -> List[Dict]:
+        """Recommande des trajets en filtrant par départ/arrivée et tri simple"""
+        results = self.get_all_trajets()
+        # Normaliser clés pour cohérence
+        items = []
+        for row in results:
+            if depart and depart.lower() not in (row.get('departNom', '') or '').lower():
+                continue
+            if arrivee and arrivee.lower() not in (row.get('arriveeNom', '') or '').lower():
+                continue
+            items.append(row)
+        key = 'dureeTrajet' if order_by == 'duree' else ('distanceTrajet' if order_by == 'distance' else 'heureDepart')
+        def parse_float(val):
+            try:
+                return float(val)
+            except Exception:
+                return float('inf')
+        if key in ('dureeTrajet', 'distanceTrajet'):
+            items.sort(key=lambda x: parse_float(x.get(key)))
+        else:
+            items.sort(key=lambda x: x.get(key, ''))
+        return items[:limit]
     
     def get_traffic_events(self, limit: int = 10) -> List[Dict]:
         """Récupère les événements de trafic récents"""

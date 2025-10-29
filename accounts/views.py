@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
 from .models import UserProfile
 from .forms import SignUpForm, LoginForm, VehiculeForm, HoraireForm, ParkingForm, EvenementForm, CapteurForm, RouteForm, VilleForm
 from .sparql_utils import sparql, FUSEKI_AVAILABLE
@@ -555,6 +556,74 @@ def trajet_create_view(request):
 
 
 @login_required
+def trajet_detail_view(request, trajet_uri):
+    """Détails et modification d'un trajet (réservé aux conducteurs)"""
+    from urllib.parse import unquote
+    
+    if not request.user.profile.is_conducteur():
+        messages.error(request, 'Seuls les conducteurs peuvent modifier des trajets.')
+        return redirect('accounts:dashboard')
+    
+    trajet_uri = unquote(trajet_uri)
+    
+    # Charger données nécessaires
+    trajets = sparql.get_all_trajets()
+    stations = sparql.get_all_stations() if FUSEKI_AVAILABLE else []
+    vehicules = sparql.get_vehicles() if FUSEKI_AVAILABLE else []
+    trajet_data = None
+    
+    for t in trajets:
+        if t.get('trajet', '') == trajet_uri:
+            trajet_data = t
+            break
+    
+    if not trajet_data:
+        messages.error(request, 'Trajet non trouvé.')
+        return redirect('accounts:trajets_list')
+    
+    if request.method == 'POST':
+        depart_station_uri = request.POST.get('depart_station') or None
+        arrivee_station_uri = request.POST.get('arrivee_station') or None
+        vehicule_sel = request.POST.get('vehicule') or None
+        heure_depart = request.POST.get('heure_depart') or None
+        heure_arrivee = request.POST.get('heure_arrivee') or None
+        distance = request.POST.get('distance')
+        duree = request.POST.get('duree')
+        
+        try:
+            distance = float(distance) if distance else None
+            duree = float(duree) if duree else None
+        except ValueError:
+            messages.error(request, 'Distance et durée doivent être des nombres.')
+            return redirect('accounts:trajets_list')
+        
+        success = sparql.update_trajet(
+            trajet_uri=trajet_uri,
+            depart_station_uri=depart_station_uri,
+            arrivee_station_uri=arrivee_station_uri,
+            vehicule_uri=vehicule_sel,
+            heure_depart=heure_depart,
+            heure_arrivee=heure_arrivee,
+            distance=distance,
+            duree=duree
+        )
+        
+        if success:
+            messages.success(request, 'Trajet mis à jour avec succès!')
+            return redirect('accounts:trajets_list')
+        else:
+            messages.error(request, 'Erreur lors de la mise à jour du trajet.')
+    
+    return render(request, 'accounts/trajet_form.html', {
+        'stations': stations,
+        'vehicules': vehicules,
+        'trajet': trajet_data,
+        'title': 'Modifier le Trajet',
+        'submit_label': 'Mettre à jour',
+        'fuseki_available': FUSEKI_AVAILABLE
+    })
+
+@login_required
 def trajet_delete_view(request, trajet_uri):
     """Supprime un trajet (réservé aux conducteurs)"""
     from urllib.parse import unquote
@@ -695,6 +764,65 @@ def station_create_view(request):
         'fuseki_available': FUSEKI_AVAILABLE
     })
 
+
+@login_required
+def station_detail_view(request, station_uri):
+    """Détails et modification d'une station (réservé aux gestionnaires)"""
+    from urllib.parse import unquote
+    
+    if not request.user.profile.is_gestionnaire():
+        messages.error(request, 'Seuls les gestionnaires peuvent modifier des stations.')
+        return redirect('accounts:dashboard')
+    
+    station_uri = unquote(station_uri)
+    
+    stations = sparql.get_all_stations() if FUSEKI_AVAILABLE else []
+    villes = sparql.get_all_villes() if FUSEKI_AVAILABLE else []
+    station_data = None
+    
+    for s in stations:
+        if s.get('station', '') == station_uri:
+            station_data = s
+            break
+    
+    if not station_data:
+        messages.error(request, 'Station non trouvée.')
+        return redirect('accounts:stations_list')
+    
+    if request.method == 'POST':
+        nom = request.POST.get('nom') or None
+        adresse = request.POST.get('adresse') or None
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+        
+        try:
+            latitude = float(latitude) if latitude else None
+            longitude = float(longitude) if longitude else None
+        except ValueError:
+            messages.error(request, 'Latitude et longitude doivent être des nombres.')
+            return redirect('accounts:stations_list')
+        
+        success = sparql.update_station(
+            station_uri=station_uri,
+            nom=nom,
+            adresse=adresse,
+            latitude=latitude,
+            longitude=longitude
+        )
+        
+        if success:
+            messages.success(request, 'Station mise à jour avec succès!')
+            return redirect('accounts:stations_list')
+        else:
+            messages.error(request, 'Erreur lors de la mise à jour de la station.')
+    
+    return render(request, 'accounts/station_form.html', {
+        'villes': villes,
+        'station': station_data,
+        'title': 'Modifier la Station',
+        'submit_label': 'Mettre à jour',
+        'fuseki_available': FUSEKI_AVAILABLE
+    })
 
 @login_required
 def station_delete_view(request, station_uri):
@@ -2087,3 +2215,37 @@ def toutes_reservations_view(request):
             context['error'] = str(e)
     
     return render(request, 'accounts/toutes_reservations.html', context)
+
+
+# ============================================
+# VUES AI/SUGGESTIONS
+# ============================================
+
+@login_required
+def ai_station_suggest_view(request):
+    """JSON endpoint pour suggérer des stations selon mot-clé/type/ville"""
+    if not FUSEKI_AVAILABLE:
+        return JsonResponse({"stations": [], "error": "Fuseki indisponible"}, status=200)
+    keyword = request.GET.get('q') or None
+    type_station = request.GET.get('type') or None
+    ville = request.GET.get('ville') or None
+    try:
+        results = sparql.search_stations(keyword=keyword, type_station=type_station, ville_keyword=ville, limit=20)
+        return JsonResponse({"stations": results})
+    except Exception as e:
+        return JsonResponse({"stations": [], "error": str(e)}, status=200)
+
+
+@login_required
+def ai_trajet_recommend_view(request):
+    """JSON endpoint pour recommander des trajets (tri par durée/distance)"""
+    if not FUSEKI_AVAILABLE:
+        return JsonResponse({"trajets": [], "error": "Fuseki indisponible"}, status=200)
+    depart = request.GET.get('depart') or None
+    arrivee = request.GET.get('arrivee') or None
+    order_by = request.GET.get('order_by') or 'duree'
+    try:
+        results = sparql.recommend_trips(depart=depart, arrivee=arrivee, order_by=order_by, limit=10)
+        return JsonResponse({"trajets": results})
+    except Exception as e:
+        return JsonResponse({"trajets": [], "error": str(e)}, status=200)
